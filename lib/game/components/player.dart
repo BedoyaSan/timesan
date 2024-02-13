@@ -1,15 +1,16 @@
 import 'package:flame/components.dart';
+import 'package:flame/extensions.dart';
 import 'package:flutter/material.dart';
+import 'package:timesan/game/timesan_game.dart';
 
-class Player extends PositionComponent {
+class Player extends PositionComponent with HasGameReference<TimeSanGame> {
   static final _paint = Paint()..color = Colors.white;
 
   @override
   void render(Canvas canvas) {
     canvas.drawRect(size.toRect(), _paint);
-  }
-
-  void movePlayer(Vector2 movement) {
-    position = movement;
+    if (game.toChange) {
+      game.arrowSwitch.render(canvas);
+    }
   }
 }

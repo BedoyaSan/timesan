@@ -1,49 +1,148 @@
 import 'dart:async';
 import 'dart:math';
+import 'dart:ui';
 
-import 'package:flame/components.dart';
+import 'package:flame/components.dart' hide Timer;
+import 'package:flame/effects.dart';
 import 'package:flame/events.dart';
+import 'package:flame/flame.dart';
 import 'package:flame/game.dart';
-import 'package:timesan/game/components/hex_cell.dart';
+import 'package:timesan/util/assets.dart';
 
+import 'components/hex_cell.dart';
 import 'components/player.dart';
-import 'components/time_zone.dart';
 import 'config.dart';
 
-class TimeSanGame extends FlameGame with PanDetector {
-  TimeSanGame()
-      : super(
-          camera: CameraComponent.withFixedResolution(
-              width: gameWidth, height: gameHeight),
-        );
+class TimeSanGame extends FlameGame
+    with PanDetector, ScrollDetector, ScaleDetector {
+  TimeSanGame({required this.fieldSize}) : super();
 
   late Player player;
   late List<HexCell> grid;
+  int fieldSize;
 
-  double get width => size.x;
-  double get height => size.y;
+  //Sprites
+  late SpriteComponent defaultHex;
+  late SpriteComponent disabledHex;
+  late SpriteComponent hexPlant01;
+  late SpriteComponent hexPlant02;
+  late SpriteComponent hexPlant03;
+  late SpriteComponent waterDrop;
+  late SpriteAnimation hexBush;
+  late SpriteAnimationComponent hexBushAnimationItem;
 
-  // Player position utilities
+  late SpriteComponent arrowSwitch;
+
+  // Player movement
   Vector2 initialMovePos = Vector2(0, 0);
   Vector2 finalMovePos = Vector2(0, 0);
   double angleMovement = 0.0;
+  bool onMovement = false;
+  bool executingAction = false;
+  bool toChange = false;
+  late Timer hexSwitch;
 
-  int playerX = (hexGridCount - 1) * 2;
-  int playerY = hexGridCount - 1;
+  //Player initial position
+  int playerX = 0;
+  int playerY = 0;
 
-  HexCell emptyHex = HexCell(Vector2(0, 0), '')
-    ..isDisabled = true
-    ..isCurrent = false;
+  late HexCell currentHex;
+  List<HexCell> interactiveHex = [];
+
+  HexCell emptyHex = HexCell(Vector2(0, 0), '')..isDisabled = true;
+
+  //Grid borders
+  List<String> gridBorders = [];
+  int topHexX = 0;
+  int topHexY = 0;
+  int topHexZ = 0;
+
+  //Overlays
+  final settingsMenuId = 'SettingsMenu';
+  final executeActionId = 'ExecuteActionMenu';
+  final informationId = 'InformationMenu';
+  final finishMenuId = 'FinishMenu';
 
   @override
   FutureOr<void> onLoad() async {
     await super.onLoad();
 
-    camera.viewfinder.anchor = Anchor.center;
+    //Values initialization
+    playerX = (fieldSize - 1) * 2;
+    playerY = fieldSize - 1;
+    topHexY = fieldSize - 1;
+    topHexZ = fieldSize - 1;
 
-    world.add(TimeZone());
+    // Load images
+    defaultHex = SpriteComponent(
+      sprite: Sprite(await Flame.images.load(AssetsGame.defaultHexEnabled)),
+      size: Vector2(hexMainX * 2, hexMainY * 2),
+    );
+    disabledHex = SpriteComponent(
+      sprite: Sprite(await Flame.images.load(AssetsGame.defaultHexDisabled)),
+      size: Vector2(hexMainX * 2, hexMainY * 2),
+      paint: Paint()..color = const Color.fromARGB(54, 29, 29, 29),
+    );
+    hexPlant01 = SpriteComponent(
+      sprite: Sprite(await Flame.images.load(AssetsGame.hexPlant01)),
+      size: Vector2(hexMainX * 2, hexMainY * 2),
+    );
+    hexPlant02 = SpriteComponent(
+      sprite: Sprite(await Flame.images.load(AssetsGame.hexPlant02)),
+      size: Vector2(hexMainX * 2, hexMainY * 2),
+    );
+    hexPlant03 = SpriteComponent(
+      sprite: Sprite(await Flame.images.load(AssetsGame.hexPlant03)),
+      size: Vector2(hexMainX * 2, hexMainY * 2),
+    );
+    waterDrop = SpriteComponent(
+      sprite: Sprite(await Flame.images.load(AssetsGame.waterPuddle)),
+      size: Vector2(hexMainX * 2, hexMainY * 2),
+    );
+    arrowSwitch = SpriteComponent(
+      sprite: Sprite(await Flame.images.load(AssetsGame.arrowSwitch)),
+      size: Vector2(50, 50),
+    );
+    
 
-    grid = gridBuilder();
+    // Load Animations
+    List<SpriteAnimationFrame> hexBushList = [];
+    hexBushList.add(SpriteAnimationFrame(
+        Sprite(await Flame.images.load(AssetsGame.hexBush01A)), 100));
+    hexBushList.add(SpriteAnimationFrame(
+        Sprite(await Flame.images.load(AssetsGame.hexBush01B)), 10));
+        hexBushList.add(SpriteAnimationFrame(
+        Sprite(await Flame.images.load(AssetsGame.hexBush01C)), 10));
+    hexBush = SpriteAnimation(hexBushList);
+    hexBushAnimationItem = SpriteAnimationComponent(
+      animation: hexBush,
+      size: Vector2(hexMainX * 2, hexMainY * 2),
+    );
+
+    // Load Grid Information
+    grid = gridBuilder(fieldSize);
+    grid.shuffle();
+    gridBorders = borderGridMap(topHexX, topHexY, topHexZ);
+    String centerHexId = '${(fieldSize - 1) * 2}-${fieldSize - 1}';
+    currentHex =
+        grid.firstWhere((e) => e.idHex == centerHexId, orElse: () => emptyHex);
+
+    // Load Items into grid
+    int aux = 0;
+    for (int i = 0; i < 5; i++) {
+      while (gridBorders.any((element) =>
+          element == grid[aux].idHex || currentHex.idHex == grid[aux].idHex)) {
+        aux++;
+      }
+      grid[aux].itemName = 'HexBush';
+      grid[aux].isInteractive = true;
+      aux++;
+    }
+    while (gridBorders.any((element) =>
+        element == grid[aux].idHex || currentHex.idHex == grid[aux].idHex)) {
+      aux++;
+    }
+    grid[aux].itemName = 'Water';
 
     world.addAll(grid);
 
@@ -52,45 +151,188 @@ class TimeSanGame extends FlameGame with PanDetector {
       ..width = 50
       ..height = 100
       ..anchor = Anchor.center;
-
     world.add(player);
 
-    debugMode = true;
+    camera.viewfinder.anchor = Anchor.center;
+    camera.follow(player);
+
+    overlays.add(settingsMenuId);
+
+    debugMode = false;
   }
 
+  void timeMovement(HexCell hexDestination) {
+    executingAction = true;
+
+    // Disable a hex of the borders
+    HexCell hexToDisable = grid.firstWhere((e) => e.idHex == gridBorders[0],
+        orElse: () => emptyHex);
+    if (hexToDisable.idHex != hexDestination.idHex) {
+      gridBorders.removeAt(0);
+      hexToDisable.isDisabled = true;
+    }
+    if (gridBorders.isEmpty) {
+      topHexX += 2;
+      topHexZ--;
+      gridBorders = borderGridMap(topHexX, topHexY, topHexZ);
+      if (gridBorders.isEmpty) {
+        overlays.add(finishMenuId);
+      }
+    }
+
+    // Switch or execute movement
+    if (toChange) {
+      String idSwitch = currentHex.idHex;
+      Vector2 posSwitch = currentHex.gridPosition.clone();
+      currentHex.switchHex(
+          hexDestination.idHex, hexDestination.gridPosition.clone());
+      hexDestination.switchHex(idSwitch, posSwitch);
+      toChange = false;
+
+      player.add(MoveToEffect(
+        currentHex.gridPosition,
+        EffectController(duration: 0.5),
+      ));
+    } else {
+      currentHex = hexDestination;
+      player.add(MoveToEffect(
+        hexDestination.gridPosition,
+        EffectController(duration: 0.5),
+      ));
+    }
+
+    //Interactive Stuff
+    for (HexCell hex in interactiveHex) {
+      List<String> neighbors = getNeighborHex(hex);
+
+      for (String idHex in neighbors) {
+        HexCell hexDestination =
+            grid.firstWhere((e) => e.idHex == idHex, orElse: () => emptyHex);
+
+        if (!hexDestination.isDisabled && hexDestination.itemName == 'Water') {
+          hex.countHex++;
+          break;
+        }
+      }
+      if (hex.countHex == 4) {
+        interactiveHex.remove(hex);
+      }
+    }
+
+    // Overlay Status
+    if (currentHex.isInteractive && !overlays.isActive(executeActionId)) {
+      overlays.add(executeActionId);
+    } else if (!currentHex.isInteractive &&
+        overlays.isActive(executeActionId)) {
+      overlays.remove(executeActionId);
+    }
+
+    if (currentHex.itemName != '' && !overlays.isActive(informationId)) {
+      overlays.add(informationId);
+    } else if (currentHex.itemName == '' && overlays.isActive(informationId)) {
+      overlays.remove(informationId);
+    }
+
+    Timer(const Duration(milliseconds: 505), () {
+      executingAction = false;
+    });
+  }
+
+  // To execute on Action
+  void interactWithItem() {
+    if (currentHex.itemName == 'HexBush') {
+      currentHex.isInteractive = false;
+      currentHex.countHex = 0;
+      currentHex.itemName = 'HexFlower';
+      interactiveHex.add(currentHex);
+      overlays.remove(executeActionId);
+    }
+  }
+
+  // Movement detection with Mouse or Tactile
   @override
-  void onPanDown(DragDownInfo info) {
+  void onPanStart(DragStartInfo info) {
     initialMovePos = info.eventPosition.global;
   }
 
   @override
   void onPanUpdate(DragUpdateInfo info) {
+    if (!onMovement) {
+      onMovement = true;
+      hexSwitch = Timer(const Duration(milliseconds: 1250), () {
+        if (onMovement) {
+          toChange = true;
+        }
+      });
+    }
     finalMovePos = info.eventPosition.global;
   }
 
   @override
   void onPanEnd(DragEndInfo info) {
-    var dx = (finalMovePos.x - initialMovePos.x);
-    var dy = (finalMovePos.y - initialMovePos.y);
-    dx = dx == 0 ? 0.01 : dx;
-    dy = dy == 0 ? 0.01 : dy;
-    var distance = sqrt(pow(dx, 2) + pow(dy, 2));
-
-    if (distance > 25) {
-      angleMovement = calculateAngle(dx, dy);
-      int nextX, nextY;
-      (nextX, nextY) = getNextHex(angleMovement, playerX, playerY);
-
-      HexCell hexDestination = grid.firstWhere(
-          (e) => e.idHex == '$nextX-$nextY',
-          orElse: () => emptyHex);
-
-      if (hexDestination.isDisabled) {
-      } else {
-        playerX = nextX;
-        playerY = nextY;
-        player.movePlayer(hexDestination.gridPosition);
+    if (!executingAction) {
+      onMovement = false;
+      if (hexSwitch.isActive) {
+        hexSwitch.cancel();
       }
+      var dx = (finalMovePos.x - initialMovePos.x);
+      var dy = (finalMovePos.y - initialMovePos.y);
+      dx = (dx == 0) ? 0.01 : dx;
+      dy = (dy == 0) ? 0.01 : dy;
+      var distance = sqrt(pow(dx, 2) + pow(dy, 2));
+
+      if (distance > 25) {
+        angleMovement = calculateAngle(dx, dy);
+        int nextX, nextY;
+        (nextX, nextY) = getNextHex(angleMovement, playerX, playerY);
+
+        HexCell hexDestination = grid.firstWhere(
+            (e) => e.idHex == '$nextX-$nextY',
+            orElse: () => emptyHex);
+
+        if (!hexDestination.isDisabled) {
+          playerX = nextX;
+          playerY = nextY;
+
+          timeMovement(hexDestination);
+        }
+      } else {
+        executingAction = false;
+        toChange = false;
+      }
+    }
+  }
+
+  // Zoom in and out Functions
+  void clampZoom() {
+    camera.viewfinder.zoom = camera.viewfinder.zoom.clamp(0.05, 3.0);
+  }
+
+  static const zoomPerScrollUnit = 0.02;
+
+  @override
+  void onScroll(PointerScrollInfo info) {
+    camera.viewfinder.zoom -=
+        info.scrollDelta.global.y.sign * zoomPerScrollUnit;
+    clampZoom();
+  }
+
+  late double startZoom;
+
+  @override
+  void onScaleStart(info) {
+    startZoom = camera.viewfinder.zoom;
+  }
+
+  @override
+  void onScaleUpdate(ScaleUpdateInfo info) {
+    final currentScale = info.scale.global;
+    if (!currentScale.isIdentity()) {
+      camera.viewfinder.zoom = startZoom * currentScale.y;
+      clampZoom();
+    } else {
+      final delta = info.delta.global;
+      camera.viewfinder.position.translate(-delta.x, -delta.y);
     }
   }
 }
@@ -127,16 +369,15 @@ double calculateAngle(double dx, double dy) {
     x++;
     y++;
   }
-
   return (x, y);
 }
 
-List<HexCell> gridBuilder() {
+List<HexCell> gridBuilder(int gridHexSize) {
   List<HexCell> grid = [];
 
-  double currentYHex = -(hexMainY * 2 * (hexGridCount - 1));
+  double currentYHex = -(hexMainY * 2 * (gridHexSize - 1));
   double currentXHex = 0;
-  int gridLength = (4 * (hexGridCount - 1)) + 1;
+  int gridLength = (4 * (gridHexSize - 1)) + 1;
   int current = 1;
   int limitReach = 0;
 
@@ -145,17 +386,16 @@ List<HexCell> gridBuilder() {
     for (int j = 0; j < current; j++) {
       double x = currentXHex + (j * (hexMainX * 3));
       Vector2 position = Vector2(x, currentYHex);
-      String hexKey = '$i-${j + (hexGridCount - current) + yIndex}';
-
+      String hexKey = '$i-${j + (gridHexSize - current) + yIndex}';
       grid.add(HexCell(position, hexKey));
 
       yIndex++;
     }
-    if (current == hexGridCount) {
+    if (current == gridHexSize) {
       limitReach++;
       current--;
       currentXHex += (hexMainX * 3 / 2);
-    } else if (limitReach == hexGridCount) {
+    } else if (limitReach == gridHexSize) {
       current--;
       currentXHex += (hexMainX * 3 / 2);
     } else {
@@ -166,4 +406,54 @@ List<HexCell> gridBuilder() {
   }
 
   return grid;
+}
+
+List<String> borderGridMap(int x, int y, int z) {
+  List<String> borders = [];
+  for (int i = 0; i < z; i++) {
+    x++;
+    y++;
+    borders.add('$x-$y');
+  }
+  for (int i = 0; i < z; i++) {
+    x += 2;
+    borders.add('$x-$y');
+  }
+  for (int i = 0; i < z; i++) {
+    x++;
+    y--;
+    borders.add('$x-$y');
+  }
+  for (int i = 0; i < z; i++) {
+    x--;
+    y--;
+    borders.add('$x-$y');
+  }
+  for (int i = 0; i < z; i++) {
+    x -= 2;
+    borders.add('$x-$y');
+  }
+  for (int i = 0; i < z; i++) {
+    x--;
+    y++;
+    borders.add('$x-$y');
+  }
+
+  borders.shuffle();
+
+  return borders;
+}
+
+List<String> getNeighborHex(HexCell hex) {
+  List<String> neighbors = [];
+  List<String> hexId = hex.idHex.split('-');
+  int x = int.parse(hexId[0]);
+  int y = int.parse(hexId[1]);
+  neighbors.add('${x - 2}-$y');
+  neighbors.add('${x - 1}-${y + 1}');
+  neighbors.add('${x + 1}-${y + 1}');
+  neighbors.add('${x + 2}-$y');
+  neighbors.add('${x + 1}-${y - 1}');
+  neighbors.add('${x - 1}-${y - 1}');
+  return neighbors;
 }

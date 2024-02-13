@@ -1,5 +1,5 @@
 name: timesan
-description: "A Flutter game! Featuring time itself."
+description: 'A Flutter game! Featuring time itself.'
 publish_to: 'none'
 
 version: 0.0.1
@@ -10,8 +10,9 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  cupertino_icons: ^1.0.2
   flame: ^1.14.0
+  google_fonts: ^6.1.0
+  
 
 dev_dependencies:
   flutter_test:
@@ -20,3 +21,7 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  assets:
+    - assets/images/
+    - assets/ui/
+    - assets/
