@@ -8,6 +8,7 @@ import 'package:flame/events.dart';
 import 'package:flame/flame.dart';
 import 'package:flame/game.dart';
 import 'package:timesan/util/assets.dart';
+import 'package:timesan/util/game_Item.dart';
 
 import 'components/hex_cell.dart';
 import 'components/player.dart';
@@ -15,11 +16,12 @@ import 'config.dart';
 
 class TimeSanGame extends FlameGame
     with PanDetector, ScrollDetector, ScaleDetector {
-  TimeSanGame({required this.fieldSize}) : super();
+  TimeSanGame({required this.fieldSize, required this.gameItems}) : super();
 
   late Player player;
   late List<HexCell> grid;
   int fieldSize;
+  List<GameItem> gameItems;
 
   //Sprites
   late SpriteComponent defaultHex;
@@ -62,6 +64,7 @@ class TimeSanGame extends FlameGame
   final executeActionId = 'ExecuteActionMenu';
   final informationId = 'InformationMenu';
   final finishMenuId = 'FinishMenu';
+  final gameInfoId = 'GameInfo';
 
   @override
   FutureOr<void> onLoad() async {
@@ -103,7 +106,6 @@ class TimeSanGame extends FlameGame
       sprite: Sprite(await Flame.images.load(AssetsGame.arrowSwitch)),
       size: Vector2(50, 50),
     );
-    
 
     // Load Animations
     List<SpriteAnimationFrame> hexBushList = [];
@@ -111,7 +113,7 @@ class TimeSanGame extends FlameGame
         Sprite(await Flame.images.load(AssetsGame.hexBush01A)), 100));
     hexBushList.add(SpriteAnimationFrame(
         Sprite(await Flame.images.load(AssetsGame.hexBush01B)), 10));
-        hexBushList.add(SpriteAnimationFrame(
+    hexBushList.add(SpriteAnimationFrame(
         Sprite(await Flame.images.load(AssetsGame.hexBush01C)), 10));
     hexBush = SpriteAnimation(hexBushList);
     hexBushAnimationItem = SpriteAnimationComponent(
@@ -129,20 +131,16 @@ class TimeSanGame extends FlameGame
 
     // Load Items into grid
     int aux = 0;
-    for (int i = 0; i < 5; i++) {
+    gameItems.shuffle();
+    for (GameItem item in gameItems) {
       while (gridBorders.any((element) =>
           element == grid[aux].idHex || currentHex.idHex == grid[aux].idHex)) {
         aux++;
       }
-      grid[aux].itemName = 'HexBush';
-      grid[aux].isInteractive = true;
+      grid[aux].itemName = item.itemName;
+      grid[aux].isInteractive = item.isInteractive;
       aux++;
     }
-    while (gridBorders.any((element) =>
-        element == grid[aux].idHex || currentHex.idHex == grid[aux].idHex)) {
-      aux++;
-    }
-    grid[aux].itemName = 'Water';
 
     world.addAll(grid);
 
@@ -164,78 +162,84 @@ class TimeSanGame extends FlameGame
   void timeMovement(HexCell hexDestination) {
     executingAction = true;
 
-    // Disable a hex of the borders
-    HexCell hexToDisable = grid.firstWhere((e) => e.idHex == gridBorders[0],
-        orElse: () => emptyHex);
-    if (hexToDisable.idHex != hexDestination.idHex) {
-      gridBorders.removeAt(0);
-      hexToDisable.isDisabled = true;
-    }
-    if (gridBorders.isEmpty) {
-      topHexX += 2;
-      topHexZ--;
-      gridBorders = borderGridMap(topHexX, topHexY, topHexZ);
-      if (gridBorders.isEmpty) {
-        overlays.add(finishMenuId);
+    try {
+      // Disable a hex of the borders
+      HexCell hexToDisable = grid.firstWhere((e) => e.idHex == gridBorders[0],
+          orElse: () => emptyHex);
+      if (hexToDisable.idHex != hexDestination.idHex) {
+        gridBorders.removeAt(0);
+        hexToDisable.isDisabled = true;
       }
-    }
-
-    // Switch or execute movement
-    if (toChange) {
-      String idSwitch = currentHex.idHex;
-      Vector2 posSwitch = currentHex.gridPosition.clone();
-      currentHex.switchHex(
-          hexDestination.idHex, hexDestination.gridPosition.clone());
-      hexDestination.switchHex(idSwitch, posSwitch);
-      toChange = false;
-
-      player.add(MoveToEffect(
-        currentHex.gridPosition,
-        EffectController(duration: 0.5),
-      ));
-    } else {
-      currentHex = hexDestination;
-      player.add(MoveToEffect(
-        hexDestination.gridPosition,
-        EffectController(duration: 0.5),
-      ));
-    }
-
-    //Interactive Stuff
-    for (HexCell hex in interactiveHex) {
-      List<String> neighbors = getNeighborHex(hex);
-
-      for (String idHex in neighbors) {
-        HexCell hexDestination =
-            grid.firstWhere((e) => e.idHex == idHex, orElse: () => emptyHex);
-
-        if (!hexDestination.isDisabled && hexDestination.itemName == 'Water') {
-          hex.countHex++;
-          break;
+      if (gridBorders.isEmpty) {
+        topHexX += 2;
+        topHexZ--;
+        gridBorders = borderGridMap(topHexX, topHexY, topHexZ);
+        if (gridBorders.isEmpty) {
+          overlays.add(finishMenuId);
         }
       }
-      if (hex.countHex == 4) {
-        interactiveHex.remove(hex);
+
+      // Switch or execute movement
+      if (toChange) {
+        String idSwitch = currentHex.idHex;
+        Vector2 posSwitch = currentHex.gridPosition.clone();
+        currentHex.switchHex(
+            hexDestination.idHex, hexDestination.gridPosition.clone());
+        hexDestination.switchHex(idSwitch, posSwitch);
+        toChange = false;
+
+        player.add(MoveToEffect(
+          currentHex.gridPosition,
+          EffectController(duration: 0.5),
+        ));
+      } else {
+        currentHex = hexDestination;
+        player.add(MoveToEffect(
+          hexDestination.gridPosition,
+          EffectController(duration: 0.5),
+        ));
       }
-    }
 
-    // Overlay Status
-    if (currentHex.isInteractive && !overlays.isActive(executeActionId)) {
-      overlays.add(executeActionId);
-    } else if (!currentHex.isInteractive &&
-        overlays.isActive(executeActionId)) {
-      overlays.remove(executeActionId);
-    }
+      //Interactive Stuff
+      for (HexCell hex in interactiveHex) {
+        List<String> neighbors = getNeighborHex(hex);
 
-    if (currentHex.itemName != '' && !overlays.isActive(informationId)) {
-      overlays.add(informationId);
-    } else if (currentHex.itemName == '' && overlays.isActive(informationId)) {
-      overlays.remove(informationId);
-    }
+        for (String idHex in neighbors) {
+          HexCell hexDestination =
+              grid.firstWhere((e) => e.idHex == idHex, orElse: () => emptyHex);
 
-    Timer(const Duration(milliseconds: 505), () {
-      executingAction = false;
-    });
+          if (!hexDestination.isDisabled &&
+              hexDestination.itemName == 'Water') {
+            hex.countHex++;
+            break;
+          }
+        }
+        if (hex.countHex == 4) {
+          interactiveHex.remove(hex);
+        }
+      }
+
+      // Overlay Status
+      if (currentHex.isInteractive && !overlays.isActive(executeActionId)) {
+        overlays.add(executeActionId);
+      } else if (!currentHex.isInteractive &&
+          overlays.isActive(executeActionId)) {
+        overlays.remove(executeActionId);
+      }
+
+      if (currentHex.itemName != '' && !overlays.isActive(informationId)) {
+        overlays.add(informationId);
+      } else if (currentHex.itemName == '' &&
+          overlays.isActive(informationId)) {
+        overlays.remove(informationId);
+      }
+    } catch (e) {
+      //Something went wrong, one can wonder where
+    } finally {
+      Timer(const Duration(milliseconds: 500), () {
+        executingAction = false;
+      });
+    }
   }
 
   // To execute on Action
@@ -253,6 +257,15 @@ class TimeSanGame extends FlameGame
   @override
   void onPanStart(DragStartInfo info) {
     initialMovePos = info.eventPosition.global;
+  }
+
+  @override
+  void onPanCancel() {
+    if (hexSwitch.isActive) {
+      hexSwitch.cancel();
+    }
+    toChange = false;
+    onMovement = false;
   }
 
   @override
@@ -303,7 +316,7 @@ class TimeSanGame extends FlameGame
     }
   }
 
-  // Zoom in and out Functions
+  // Zoom in and out Functions -----
   void clampZoom() {
     camera.viewfinder.zoom = camera.viewfinder.zoom.clamp(0.05, 3.0);
   }

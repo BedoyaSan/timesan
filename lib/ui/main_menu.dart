@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:timesan/main.dart';
@@ -46,7 +47,7 @@ class MainMenu extends StatelessWidget {
                         mainButton('New game', 'Game01'),
                         mainButton('New game 02', 'Game02'),
                         mainButton('Options', ''),
-                        mainButton('Another button', ''),
+                        mainButton((FirebaseAuth.instance.currentUser == null) ? 'Log in' : 'User info', 'Authentication'),
                       ],
                     ),
                     Padding(

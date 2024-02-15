@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "14787775543",
+    "project_id": "timesanadventure",
+    "storage_bucket": "timesanadventure.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:14787775543:android:c18b007497f030da3703b2",
+        "android_client_info": {
+          "package_name": "com.example.timesan"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAR6nJWKzyxb-ygWQfvW-Mjo9DDL6uMbT8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
