@@ -42,12 +42,36 @@ class MainMenu extends StatelessWidget {
                         ),
                       ),
                     ),
+                    SizedBox(
+                      width: 300,
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          (FirebaseAuth.instance.currentUser != null)
+                              ? (FirebaseAuth
+                                      .instance.currentUser?.displayName ??
+                                  '')
+                              : '',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16.0,
+                            decoration: TextDecoration.none,
+                          ),
+                          textDirection: TextDirection.ltr,
+                        ),
+                      ),
+                    ),
                     Column(
                       children: [
                         mainButton('New game', 'Game01'),
                         mainButton('New game 02', 'Game02'),
                         mainButton('Options', ''),
-                        mainButton((FirebaseAuth.instance.currentUser == null) ? 'Log in' : 'User info', 'Authentication'),
+                        mainButton(
+                            (FirebaseAuth.instance.currentUser == null)
+                                ? 'Log in'
+                                : 'User info',
+                            'Authentication'),
                       ],
                     ),
                     Padding(
