@@ -1,8 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:timesan/main.dart';
-import 'package:timesan/util/assets.dart';
+import '../main.dart';
+import '../util/assets.dart';
 
 class MainMenu extends StatelessWidget {
   const MainMenu({super.key});

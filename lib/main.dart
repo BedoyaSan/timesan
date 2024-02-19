@@ -1,15 +1,16 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flame/game.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:timesan/firebase_options.dart';
-import 'package:timesan/ui/auth_user.dart';
-import 'package:timesan/ui/info_screen.dart';
-import 'package:timesan/ui/main_menu.dart';
-import 'package:timesan/util/game_Item.dart';
-import 'package:timesan/util/game_info.dart';
+import 'firebase_options.dart';
+import 'ui/auth_user.dart';
+import 'ui/info_screen.dart';
+import 'ui/main_menu.dart';
+import 'util/game_Item.dart';
 import 'game/timesan_game.dart';
-
+import 'util/game_info.dart';
 import 'package:flutter/material.dart';
+
+
 
 ValueNotifier<Map<String, dynamic>> widgetStatus =
     ValueNotifier<Map<String, dynamic>>({

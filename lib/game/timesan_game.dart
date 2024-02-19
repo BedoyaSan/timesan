@@ -7,8 +7,8 @@ import 'package:flame/effects.dart';
 import 'package:flame/events.dart';
 import 'package:flame/flame.dart';
 import 'package:flame/game.dart';
-import 'package:timesan/util/assets.dart';
-import 'package:timesan/util/game_Item.dart';
+import '../util/assets.dart';
+import '../util/game_Item.dart';
 
 import 'components/hex_cell.dart';
 import 'components/player.dart';

@@ -3,8 +3,9 @@ import 'dart:ui' hide TextStyle;
 
 import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
-import 'package:timesan/game/config.dart';
-import 'package:timesan/game/timesan_game.dart';
+
+import '../config.dart';
+import '../timesan_game.dart';
 
 class HexCell extends PolygonComponent with HasGameReference<TimeSanGame> {
   HexCell(this.gridPosition, this.idHex)

@@ -1,7 +1,8 @@
 import 'package:flame/components.dart';
 import 'package:flame/extensions.dart';
 import 'package:flutter/material.dart';
-import 'package:timesan/game/timesan_game.dart';
+
+import '../timesan_game.dart';
 
 class Player extends PositionComponent with HasGameReference<TimeSanGame> {
   static final _paint = Paint()..color = Colors.white;

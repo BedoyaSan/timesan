@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:timesan/main.dart';
+import '../main.dart';
 
 Widget infoScreen(BuildContext context, String message) {
   return GestureDetector(
