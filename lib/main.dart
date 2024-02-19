@@ -10,8 +10,6 @@ import 'game/timesan_game.dart';
 import 'util/game_info.dart';
 import 'package:flutter/material.dart';
 
-
-
 ValueNotifier<Map<String, dynamic>> widgetStatus =
     ValueNotifier<Map<String, dynamic>>({
   'currentView': 'Home',
@@ -149,31 +147,27 @@ GameWidget<TimeSanGame> myGameInstance(int size) {
             width: MediaQuery.of(context).size.width,
             color: Colors.black.withOpacity(0.7),
             child: Center(
-                child: Flexible(
-              fit: FlexFit.tight,
-              child: Center(
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 20, right: 20),
-                  child: Container(
-                    decoration: const BoxDecoration(
-                        borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(25),
-                          bottomRight: Radius.circular(25),
-                        ),
-                        color: Colors.black),
-                    padding: const EdgeInsets.all(25),
-                    child: Text(
-                      gameInfo(game.currentHex),
-                      style: GoogleFonts.robotoCondensed(
-                        color: Colors.white,
-                        fontSize: 24,
-                        decoration: TextDecoration.none,
+              child: Padding(
+                padding: const EdgeInsets.only(left: 20, right: 20),
+                child: Container(
+                  decoration: const BoxDecoration(
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(25),
+                        bottomRight: Radius.circular(25),
                       ),
+                      color: Colors.black),
+                  padding: const EdgeInsets.all(25),
+                  child: Text(
+                    gameInfo(game.currentHex),
+                    style: GoogleFonts.robotoCondensed(
+                      color: Colors.white,
+                      fontSize: 24,
+                      decoration: TextDecoration.none,
                     ),
                   ),
                 ),
               ),
-            )),
+            ),
           ),
         );
       }
