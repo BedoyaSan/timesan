@@ -21,15 +21,12 @@ jobs:
       - uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
-
-      - name: Clean pub
-        run: flutter pub clean
           
       - name: Get dependencies
         run: flutter pub get
   
       - name: Build web app
-        run: flutter build web --base-href="/timesan/"
+        run: flutter build web --release --base-href="/timesan/"
       
       - name: Build And Deploy
         id: builddeploy
