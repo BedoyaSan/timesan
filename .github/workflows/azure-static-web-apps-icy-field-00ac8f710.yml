@@ -26,6 +26,8 @@ jobs:
           
       - name: Get dependencies
         run: flutter pub get
+
+      - name: Update dependencies
         run: flutter pub upgrade
   
       - name: Build web app
