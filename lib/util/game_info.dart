@@ -1,4 +1,4 @@
-import 'package:timesan/game/components/hex_cell.dart';
+import '../game/components/hex_cell.dart';
 
 Map<String, String> info = {
   'Water': 'A water source, nearby objects may benefit from it',
