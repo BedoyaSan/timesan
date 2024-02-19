@@ -8,8 +8,8 @@ import 'package:flame/events.dart';
 import 'package:flame/flame.dart';
 import 'package:flame/game.dart';
 import '../util/assets.dart';
-import '../util/game_Item.dart';
 
+import '../util/game_item.dart';
 import 'components/hex_cell.dart';
 import 'components/player.dart';
 import 'config.dart';

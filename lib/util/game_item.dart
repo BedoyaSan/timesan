@@ -1,11 +1,12 @@
 class GameItem {
-  late String itemName;
-  bool isInteractive = false;
-
+  GameItem(this.itemName);
+  
   GameItem.interactive(this.itemName) {
     isInteractive = true;
   }
-  GameItem(this.itemName);
+
+  late String itemName;
+  bool isInteractive = false;
 }
 
 List<GameItem> itemsWorld01 = [
