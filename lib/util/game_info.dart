@@ -1,9 +1,9 @@
 import 'package:timesan/game/components/hex_cell.dart';
 
 Map<String, String> info = {
-  'Water': 'A source of water, living creatures used to drink this',
-  'HexBush': 'Bush, may found items in there',
-  'HexFlower01': 'A seed of some sort, can grow if near of water sources',
+  'Water': 'A water source, nearby objects may benefit from it',
+  'HexBush': 'A bunch of ivy, may find something if inspected',
+  'HexFlower01': 'Some sprouts, could grow near a water source',
   'HexFlower02': 'A growing plant',
   'HexFlower03': 'A nice flower',
 };

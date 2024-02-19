@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'dart:ui';
+import 'dart:ui' hide TextStyle;
 
 import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
@@ -17,10 +17,10 @@ class HexCell extends PolygonComponent with HasGameReference<TimeSanGame> {
   bool isDisabled = false;
   bool isInteractive = false;
 
-  @override
-  void update(double dt) {
-    game.hexBushAnimationItem.update(dt);
-  }
+  // @override
+  // void update(double dt) {
+  //   game.hexBushAnimationItem.update(dt);
+  // }
 
   @override
   Future<void> render(Canvas canvas) async {
@@ -45,7 +45,7 @@ class HexCell extends PolygonComponent with HasGameReference<TimeSanGame> {
           game.waterDrop.render(canvas);
           break;
         case 'HexBush':
-          game.hexBushAnimationItem.render(canvas);
+          game.hexBushDefault.render(canvas);
           break;
       }
     }

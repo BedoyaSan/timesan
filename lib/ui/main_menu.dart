@@ -32,7 +32,7 @@ class MainMenu extends StatelessWidget {
                         padding: const EdgeInsets.all(8.0),
                         child: Text(
                           'Time\'s an Adventure',
-                          style: TextStyle(
+                          style: GoogleFonts.rubikGlitch(
                             color: Colors.red.shade400,
                             fontWeight: FontWeight.bold,
                             fontSize: 42.0,
@@ -46,12 +46,11 @@ class MainMenu extends StatelessWidget {
                       width: 300,
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: Text(
-                          (FirebaseAuth.instance.currentUser != null)
+                        child: Text('Welcome, ${(FirebaseAuth.instance.currentUser != null)
                               ? (FirebaseAuth
                                       .instance.currentUser?.displayName ??
                                   '')
-                              : '',
+                              : 'Anonymous user'}',
                           style: const TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.bold,
@@ -66,7 +65,7 @@ class MainMenu extends StatelessWidget {
                       children: [
                         mainButton('New game', 'Game01'),
                         mainButton('New game 02', 'Game02'),
-                        mainButton('Options', ''),
+                        mainButton('About', 'About'),
                         mainButton(
                             (FirebaseAuth.instance.currentUser == null)
                                 ? 'Log in'
@@ -77,7 +76,7 @@ class MainMenu extends StatelessWidget {
                     Padding(
                       padding: const EdgeInsets.only(top: 25, right: 15),
                       child: Text(
-                        'Beta version 0.1',
+                        'Beta version 0.2',
                         textAlign: TextAlign.center,
                         textDirection: TextDirection.ltr,
                         style: GoogleFonts.rubikGlitch(
@@ -118,7 +117,12 @@ class MainMenu extends StatelessWidget {
       ),
       onTap: () {
         if (tag != '') {
-          currentView.value = tag;
+          if(tag == 'About') {
+            widgetStatus.value['gameInfo'] = true;
+          } else {
+            widgetStatus.value['currentView'] = tag;
+          }
+          widgetStatus.notifyListeners();
         }
       },
     );

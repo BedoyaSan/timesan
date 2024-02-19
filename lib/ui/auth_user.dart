@@ -25,7 +25,8 @@ class AuthUser extends StatelessWidget {
                 padding: const EdgeInsets.only(top: 16),
                 child: OutlinedButton(
                     onPressed: () {
-                      currentView.value = 'Home';
+                      widgetStatus.value['currentView'] = 'Home';
+                      widgetStatus.notifyListeners();
                     },
                     child: const Text('Back to main menu')),
               );
@@ -39,7 +40,8 @@ class AuthUser extends StatelessWidget {
               padding: const EdgeInsets.only(top: 16),
               child: OutlinedButton(
                   onPressed: () {
-                    currentView.value = 'Home';
+                    widgetStatus.value['currentView'] = 'Home';
+                    widgetStatus.notifyListeners();
                   },
                   child: const Text('Back to main menu')),
             )

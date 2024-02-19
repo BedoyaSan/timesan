@@ -12,9 +12,7 @@ class AssetsGame {
   static const String hexPlant02 = 'HexPlant02.png';
   static const String hexPlant03 = 'HexPlant03.png';
   static const String waterPuddle = 'WaterPuddle.png';
-  static const String hexBush01A = 'HexBush01A.png';
-  static const String hexBush01B = 'HexBush01B.png';
-  static const String hexBush01C = 'HexBush01C.png';
+  static const String hexBush = 'HexBushDefault.png';
 
   static const String arrowSwitch = 'ArrowSwitch.png';
 }

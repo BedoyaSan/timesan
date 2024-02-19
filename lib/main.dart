@@ -3,6 +3,7 @@ import 'package:flame/game.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:timesan/firebase_options.dart';
 import 'package:timesan/ui/auth_user.dart';
+import 'package:timesan/ui/info_screen.dart';
 import 'package:timesan/ui/main_menu.dart';
 import 'package:timesan/util/game_Item.dart';
 import 'package:timesan/util/game_info.dart';
@@ -10,7 +11,11 @@ import 'game/timesan_game.dart';
 
 import 'package:flutter/material.dart';
 
-ValueNotifier<String> currentView = ValueNotifier<String>('Home');
+ValueNotifier<Map<String, dynamic>> widgetStatus =
+    ValueNotifier<Map<String, dynamic>>({
+  'currentView': 'Home',
+  'gameInfo': false,
+});
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -18,17 +23,27 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  runApp(ValueListenableBuilder<String>(
-    valueListenable: currentView,
+  runApp(ValueListenableBuilder<Map<String, dynamic>>(
+    valueListenable: widgetStatus,
     builder: (context, value, child) => MaterialApp(
-      home: AnimatedSwitcher(
-        duration: const Duration(milliseconds: 1250),
-        // transitionBuilder: (Widget child, Animation<double> animation) =>
-        //     ScaleTransition(scale: animation, child: child),
-        child: appWidget(currentView.value),
-      ),
+      home: Stack(children: [
+        AnimatedSwitcher(
+          duration: const Duration(milliseconds: 1250),
+          // transitionBuilder: (Widget child, Animation<double> animation) =>
+          //     ScaleTransition(scale: animation, child: child),
+          child: appWidget(widgetStatus.value['currentView'].toString()),
+        ),
+        (widgetStatus.value['gameInfo'] as bool
+            ? infoScreen(
+                context,
+                '- Move around the map an interact with the elements\n'
+                '- Hold when moving for change the next cell object with the current one\n'
+                '- Win by finding a specific object, in the basic games\n'
+                '- Keep playing to unlock the garden!')
+            : Container()),
+      ]),
       theme: ThemeData(
-        textTheme: GoogleFonts.rubikGlitchTextTheme(),
+        textTheme: GoogleFonts.robotoCondensedTextTheme(),
       ),
     ),
   ));
@@ -71,11 +86,12 @@ GameWidget<TimeSanGame> myGameInstance(int size) {
             right: 20,
             child: FloatingActionButton(
               onPressed: () {
-                currentView.value = 'Home';
+                widgetStatus.value['currentView'] = 'Home';
+                widgetStatus.notifyListeners();
               },
               backgroundColor: Colors.blue.shade900,
               foregroundColor: Colors.white,
-              child: const Icon(Icons.settings),
+              child: const Icon(Icons.exit_to_app),
             ));
       },
       'ExecuteActionMenu': (BuildContext context, TimeSanGame game) {
@@ -114,7 +130,8 @@ GameWidget<TimeSanGame> myGameInstance(int size) {
             right: 100,
             child: FloatingActionButton(
               onPressed: () {
-                currentView.value = 'Home';
+                widgetStatus.value['currentView'] = 'Home';
+                widgetStatus.notifyListeners();
               },
               backgroundColor: Colors.blue.shade900,
               foregroundColor: Colors.white,
@@ -129,32 +146,33 @@ GameWidget<TimeSanGame> myGameInstance(int size) {
           child: Container(
             height: MediaQuery.of(context).size.height,
             width: MediaQuery.of(context).size.width,
-            color: Colors.black.withOpacity(0.5),
+            color: Colors.black.withOpacity(0.7),
             child: Center(
-              child: Container(
-                decoration: const BoxDecoration(
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(25),
-                      bottomRight: Radius.circular(25),
-                    ),
-                    color: Colors.black),
-                height: 500,
-                width: 700,
-                child: Center(
-                  child: Padding(
-                    padding: const EdgeInsets.only(left: 20, right: 20),
+                child: Flexible(
+              fit: FlexFit.tight,
+              child: Center(
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 20, right: 20),
+                  child: Container(
+                    decoration: const BoxDecoration(
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(25),
+                          bottomRight: Radius.circular(25),
+                        ),
+                        color: Colors.black),
+                    padding: const EdgeInsets.all(25),
                     child: Text(
                       gameInfo(game.currentHex),
-                      style: GoogleFonts.rubikGlitch(
+                      style: GoogleFonts.robotoCondensed(
                         color: Colors.white,
-                        fontSize: 16,
+                        fontSize: 24,
                         decoration: TextDecoration.none,
                       ),
                     ),
                   ),
                 ),
               ),
-            ),
+            )),
           ),
         );
       }

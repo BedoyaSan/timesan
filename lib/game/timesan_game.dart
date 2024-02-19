@@ -16,12 +16,14 @@ import 'config.dart';
 
 class TimeSanGame extends FlameGame
     with PanDetector, ScrollDetector, ScaleDetector {
-  TimeSanGame({required this.fieldSize, required this.gameItems}) : super();
+  TimeSanGame({required this.fieldSize, required this.gameItems, this.staticGame = false}) : super();
 
   late Player player;
   late List<HexCell> grid;
+
   int fieldSize;
   List<GameItem> gameItems;
+  bool staticGame;
 
   //Sprites
   late SpriteComponent defaultHex;
@@ -30,8 +32,10 @@ class TimeSanGame extends FlameGame
   late SpriteComponent hexPlant02;
   late SpriteComponent hexPlant03;
   late SpriteComponent waterDrop;
-  late SpriteAnimation hexBush;
-  late SpriteAnimationComponent hexBushAnimationItem;
+  late SpriteComponent hexBushDefault;
+
+  // late SpriteAnimation hexBush;
+  // late SpriteAnimationComponent hexBushAnimationItem;
 
   late SpriteComponent arrowSwitch;
 
@@ -65,6 +69,9 @@ class TimeSanGame extends FlameGame
   final informationId = 'InformationMenu';
   final finishMenuId = 'FinishMenu';
   final gameInfoId = 'GameInfo';
+
+  @override
+  Color backgroundColor() => const Color.fromARGB(244, 82, 89, 130);
 
   @override
   FutureOr<void> onLoad() async {
@@ -106,20 +113,24 @@ class TimeSanGame extends FlameGame
       sprite: Sprite(await Flame.images.load(AssetsGame.arrowSwitch)),
       size: Vector2(50, 50),
     );
-
-    // Load Animations
-    List<SpriteAnimationFrame> hexBushList = [];
-    hexBushList.add(SpriteAnimationFrame(
-        Sprite(await Flame.images.load(AssetsGame.hexBush01A)), 100));
-    hexBushList.add(SpriteAnimationFrame(
-        Sprite(await Flame.images.load(AssetsGame.hexBush01B)), 10));
-    hexBushList.add(SpriteAnimationFrame(
-        Sprite(await Flame.images.load(AssetsGame.hexBush01C)), 10));
-    hexBush = SpriteAnimation(hexBushList);
-    hexBushAnimationItem = SpriteAnimationComponent(
-      animation: hexBush,
+    hexBushDefault = SpriteComponent(
+      sprite: Sprite(await Flame.images.load(AssetsGame.hexBush)),
       size: Vector2(hexMainX * 2, hexMainY * 2),
     );
+
+    // Load Animations
+    // List<SpriteAnimationFrame> hexBushList = [];
+    // hexBushList.add(SpriteAnimationFrame(
+    //     Sprite(await Flame.images.load(AssetsGame.hexBush01A)), 100));
+    // hexBushList.add(SpriteAnimationFrame(
+    //     Sprite(await Flame.images.load(AssetsGame.hexBush01B)), 10));
+    // hexBushList.add(SpriteAnimationFrame(
+    //     Sprite(await Flame.images.load(AssetsGame.hexBush01C)), 10));
+    // hexBush = SpriteAnimation(hexBushList);
+    // hexBushAnimationItem = SpriteAnimationComponent(
+    //   animation: hexBush,
+    //   size: Vector2(hexMainX * 2, hexMainY * 2),
+    // );
 
     // Load Grid Information
     grid = gridBuilder(fieldSize);
@@ -211,7 +222,6 @@ class TimeSanGame extends FlameGame
           if (!hexDestination.isDisabled &&
               hexDestination.itemName == 'Water') {
             hex.countHex++;
-            break;
           }
         }
         if (hex.countHex == 4) {
