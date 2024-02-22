@@ -1,7 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_redux/flutter_redux.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../main.dart';
+import '../redux/actions.dart';
+import '../redux/app_state.dart';
 import '../util/assets.dart';
 
 class MainMenu extends StatelessWidget {
@@ -46,11 +48,8 @@ class MainMenu extends StatelessWidget {
                       width: 300,
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: Text('Welcome, ${(FirebaseAuth.instance.currentUser != null)
-                              ? (FirebaseAuth
-                                      .instance.currentUser?.displayName ??
-                                  '')
-                              : 'Anonymous user'}',
+                        child: Text(
+                          'Welcome, ${(FirebaseAuth.instance.currentUser != null) ? (FirebaseAuth.instance.currentUser?.displayName ?? '') : 'Anonymous user'}',
                           style: const TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.bold,
@@ -63,9 +62,8 @@ class MainMenu extends StatelessWidget {
                     ),
                     Column(
                       children: [
-                        mainButton('New game', 'Game01'),
-                        mainButton('New game 02', 'Game02'),
-                        mainButton('About', 'About'),
+                        mainButton('Start simulation', 'selectGame'),
+                        mainButton('How to play', 'gameInfo'),
                         mainButton(
                             (FirebaseAuth.instance.currentUser == null)
                                 ? 'Log in'
@@ -94,36 +92,45 @@ class MainMenu extends StatelessWidget {
     );
   }
 
-  GestureDetector mainButton(String label, String tag) {
-    return GestureDetector(
-      child: Container(
-        width: 200,
-        margin: const EdgeInsets.only(top: 16),
-        decoration: const BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage(AssetsUI.hexBorderButton),
-            fit: BoxFit.fill,
-          ),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(15.0),
-          child: Text(
-            label,
-            textAlign: TextAlign.center,
-            textDirection: TextDirection.ltr,
-            style: GoogleFonts.rubikGlitch(color: Colors.white, fontSize: 16),
-          ),
-        ),
-      ),
-      onTap: () {
-        if (tag != '') {
-          if(tag == 'About') {
-            widgetStatus.value['gameInfo'] = true;
-          } else {
-            widgetStatus.value['currentView'] = tag;
-          }
-          widgetStatus.notifyListeners();
+  Widget mainButton(String label, String value) {
+    return StoreConnector<AppState, VoidCallback>(
+      converter: (store) {
+        switch (value) {
+          case 'selectGame':
+            return () => store.dispatch(ToggleGameSelectAction());
+          case 'gameInfo':
+            return () => store.dispatch(ToggleGameInfoAction());
+          case 'Authentication':
+            return () => store.dispatch(SetViewAction(value));
+
+          default:
+            return () => store.dispatch(SetViewAction('Home'));
         }
+      },
+      builder: (context, callback) {
+        return GestureDetector(
+          onTap: callback,
+          child: Container(
+            width: 200,
+            margin: const EdgeInsets.only(top: 16),
+            decoration: const BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage(AssetsUI.hexBorderButton),
+                fit: BoxFit.fill,
+              ),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(15.0),
+              child: Text(
+                label,
+                textAlign: TextAlign.center,
+                textDirection: TextDirection.ltr,
+                style:
+                    GoogleFonts.rubikGlitch(color: Colors.white, fontSize: 16),
+              ),
+            ),
+          ),
+        );
       },
     );
   }

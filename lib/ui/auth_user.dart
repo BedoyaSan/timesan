@@ -2,7 +2,9 @@ import 'package:firebase_auth/firebase_auth.dart' hide EmailAuthProvider;
 import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 import 'package:firebase_ui_oauth_google/firebase_ui_oauth_google.dart';
 import 'package:flutter/material.dart';
-import '../main.dart';
+import 'package:flutter_redux/flutter_redux.dart';
+import '../redux/actions.dart';
+import '../redux/app_state.dart';
 
 class AuthUser extends StatelessWidget {
   const AuthUser({super.key});
@@ -23,30 +25,41 @@ class AuthUser extends StatelessWidget {
             footerBuilder: (context, action) {
               return Padding(
                 padding: const EdgeInsets.only(top: 16),
-                child: OutlinedButton(
-                    onPressed: () {
-                      widgetStatus.value['currentView'] = 'Home';
-                      widgetStatus.notifyListeners();
-                    },
-                    child: const Text('Back to main menu')),
+                child: Column(
+                  children: [
+                    OutlinedButton(
+                        onPressed: () {
+                          FirebaseAuth.instance.signInAnonymously();
+                        },
+                        child: const Text('Guest login')),
+                    StoreConnector<AppState, VoidCallback>(converter: (store) {
+                      return () => store.dispatch(SetViewAction('Home'));
+                    }, builder: (context, callback) {
+                      return OutlinedButton(
+                          onPressed: callback,
+                          child: const Text('Back to main menu'));
+                    }),
+                  ],
+                ),
               );
             },
           );
         }
-
-        return ProfileScreen(
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(top: 16),
-              child: OutlinedButton(
-                  onPressed: () {
-                    widgetStatus.value['currentView'] = 'Home';
-                    widgetStatus.notifyListeners();
-                  },
-                  child: const Text('Back to main menu')),
-            )
-          ],
-        );
+        print(FirebaseAuth.instance.currentUser);
+        return StoreConnector<AppState, VoidCallback>(converter: (store) {
+          return () => store.dispatch(SetViewAction('Home'));
+        }, builder: (context, callback) {
+          return ProfileScreen(
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(top: 16),
+                child: OutlinedButton(
+                    onPressed: callback,
+                    child: const Text('Back to main menu')),
+              )
+            ],
+          );
+        });
       },
     );
   }
