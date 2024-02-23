@@ -45,7 +45,6 @@ class AuthUser extends StatelessWidget {
             },
           );
         }
-        print(FirebaseAuth.instance.currentUser);
         return StoreConnector<AppState, VoidCallback>(converter: (store) {
           return () => store.dispatch(SetViewAction('Home'));
         }, builder: (context, callback) {

@@ -33,9 +33,9 @@ class HexCell extends PolygonComponent with HasGameReference<TimeSanGame> {
     if (itemName != '') {
       switch (itemName) {
         case 'HexFlower':
-          if (countHex > 3) {
+          if (countHex > 2) {
             game.hexPlant01.render(canvas);
-          } else if (countHex >1) {
+          } else if (countHex > 0) {
             game.hexPlant02.render(canvas);
           } else {
             game.hexPlant03.render(canvas);

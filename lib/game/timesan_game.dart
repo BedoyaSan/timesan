@@ -224,10 +224,9 @@ class TimeSanGame extends FlameGame
             hex.countHex--;
           }
         }
-        if (hex.countHex == 0) {
-          interactiveHex.remove(hex);
-        }
       }
+
+      interactiveHex.removeWhere((hex) => hex.countHex == 0);
 
       // Overlay Status
       if (currentHex.isInteractive && !overlays.isActive(executeActionId)) {
@@ -256,7 +255,7 @@ class TimeSanGame extends FlameGame
   void interactWithItem() {
     if (currentHex.itemName == 'HexBush') {
       currentHex.isInteractive = false;
-      currentHex.countHex = 5;
+      currentHex.countHex = 4;
       currentHex.itemName = 'HexFlower';
       interactiveHex.add(currentHex);
       overlays.remove(executeActionId);
