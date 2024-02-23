@@ -221,10 +221,10 @@ class TimeSanGame extends FlameGame
 
           if (!hexDestination.isDisabled &&
               hexDestination.itemName == 'Water') {
-            hex.countHex++;
+            hex.countHex--;
           }
         }
-        if (hex.countHex == 4) {
+        if (hex.countHex == 0) {
           interactiveHex.remove(hex);
         }
       }
@@ -256,7 +256,7 @@ class TimeSanGame extends FlameGame
   void interactWithItem() {
     if (currentHex.itemName == 'HexBush') {
       currentHex.isInteractive = false;
-      currentHex.countHex = 0;
+      currentHex.countHex = 5;
       currentHex.itemName = 'HexFlower';
       interactiveHex.add(currentHex);
       overlays.remove(executeActionId);

@@ -11,9 +11,9 @@ Map<String, String> info = {
 String gameInfo(HexCell hex) {
   String name = hex.itemName;
   if (name == 'HexFlower') {
-    if (hex.countHex < 2) {
+    if (hex.countHex > 3) {
       name += '01';
-    } else if (hex.countHex < 4) {
+    } else if (hex.countHex > 1) {
       name += '02';
     } else {
       name += '03';

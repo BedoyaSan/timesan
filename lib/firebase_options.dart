@@ -56,6 +56,7 @@ class DefaultFirebaseOptions {
     projectId: 'timesanadventure',
     authDomain: 'timesanadventure.firebaseapp.com',
     storageBucket: 'timesanadventure.appspot.com',
+    databaseURL: 'https://timesanadventure-default-rtdb.firebaseio.com/',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
@@ -64,5 +65,6 @@ class DefaultFirebaseOptions {
     messagingSenderId: '14787775543',
     projectId: 'timesanadventure',
     storageBucket: 'timesanadventure.appspot.com',
+    databaseURL: 'https://timesanadventure-default-rtdb.firebaseio.com/',
   );
 }

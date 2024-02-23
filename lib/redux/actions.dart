@@ -8,3 +8,5 @@ class ToggleGameInfoAction {}
 class ToggleGameSelectAction {}
 
 class CompleteLevelAction {}
+
+class GetDataFromUSerAction {}

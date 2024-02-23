@@ -6,13 +6,18 @@ class AppState {
   bool selectGame;
 
   int currentGame;
+  dynamic gardenGame;
+  String userId;
+  dynamic userInfo;
 
+  dynamic getState;
 
   AppState()
       : currentView = 'Home',
         gameInfo = false,
         selectGame = false,
-        currentGame = 0;
+        currentGame = 0,
+        userId = '';
 }
 
 class AppMainState {

@@ -67,7 +67,7 @@ Map<String, Widget Function(BuildContext, TimeSanGame)> overlayGame() {
         child: StoreConnector<AppState, Function>(
           converter: (store) {
             return (String view) {
-              store.dispatch(CompleteLevelAction);
+              store.dispatch(CompleteLevelAction());
               store.dispatch(SetViewAction(view));
             };
           },

@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:ui' hide TextStyle;
 
 import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
@@ -34,9 +33,9 @@ class HexCell extends PolygonComponent with HasGameReference<TimeSanGame> {
     if (itemName != '') {
       switch (itemName) {
         case 'HexFlower':
-          if (countHex < 2) {
+          if (countHex > 3) {
             game.hexPlant01.render(canvas);
-          } else if (countHex < 4) {
+          } else if (countHex >1) {
             game.hexPlant02.render(canvas);
           } else {
             game.hexPlant03.render(canvas);
@@ -49,6 +48,12 @@ class HexCell extends PolygonComponent with HasGameReference<TimeSanGame> {
           game.hexBushDefault.render(canvas);
           break;
       }
+    }
+
+    if (countHex > 0) {
+      final textPaint = textPainter(countHex.toString());
+      textPaint.layout(maxWidth: hexMainX, minWidth: hexMainX);
+      textPaint.paint(canvas, const Offset(hexMainX * 1.5, hexMainY));
     }
   }
 
@@ -73,4 +78,17 @@ List<Vector2> _getVerticesByCenter(Vector2 center) {
   vertices.add(Vector2(center.x - (hexMainX / 2), center.y - hexMainY));
 
   return vertices;
+}
+
+TextPainter textPainter(String value) {
+  return TextPainter(
+    text: TextSpan(
+      text: value,
+      style: const TextStyle(
+        fontSize: 30,
+        color: Colors.red,
+      ),
+    ),
+    textDirection: TextDirection.ltr,
+  );
 }

@@ -26,15 +26,21 @@ void main() async {
   runApp(MainApp(store: store));
 }
 
-class MainApp extends StatelessWidget {
+class MainApp extends StatefulWidget {
   final Store<AppState> store;
 
   const MainApp({Key? key, required this.store}) : super(key: key);
 
   @override
+  State<MainApp> createState() => _MainAppState();
+}
+
+class _MainAppState extends State<MainApp> {
+  
+  @override
   Widget build(BuildContext context) {
     return StoreProvider<AppState>(
-      store: store,
+      store: widget.store,
       child: MaterialApp(
         home: StoreConnector<AppState, AppMainState>(
             converter: (store) => AppMainState(
