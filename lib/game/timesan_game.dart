@@ -16,7 +16,11 @@ import 'config.dart';
 
 class TimeSanGame extends FlameGame
     with PanDetector, ScrollDetector, ScaleDetector {
-  TimeSanGame({required this.fieldSize, required this.gameItems, this.staticGame = false}) : super();
+  TimeSanGame(
+      {required this.fieldSize,
+      required this.gameItems,
+      this.staticGame = false})
+      : super();
 
   late Player player;
   late List<HexCell> grid;
@@ -134,23 +138,30 @@ class TimeSanGame extends FlameGame
 
     // Load Grid Information
     grid = gridBuilder(fieldSize);
-    grid.shuffle();
-    gridBorders = borderGridMap(topHexX, topHexY, topHexZ);
+    if (!staticGame) {
+      grid.shuffle();
+      gridBorders = borderGridMap(topHexX, topHexY, topHexZ);
+    }
+
     String centerHexId = '${(fieldSize - 1) * 2}-${fieldSize - 1}';
     currentHex =
         grid.firstWhere((e) => e.idHex == centerHexId, orElse: () => emptyHex);
 
-    // Load Items into grid
-    int aux = 0;
-    gameItems.shuffle();
-    for (GameItem item in gameItems) {
-      while (gridBorders.any((element) =>
-          element == grid[aux].idHex || currentHex.idHex == grid[aux].idHex)) {
+    if (staticGame) {
+    } else {
+      // Load Items into grid
+      int aux = 0;
+      gameItems.shuffle();
+      for (GameItem item in gameItems) {
+        while (gridBorders.any((element) =>
+            element == grid[aux].idHex ||
+            currentHex.idHex == grid[aux].idHex)) {
+          aux++;
+        }
+        grid[aux].itemName = item.itemName;
+        grid[aux].isInteractive = item.isInteractive;
         aux++;
       }
-      grid[aux].itemName = item.itemName;
-      grid[aux].isInteractive = item.isInteractive;
-      aux++;
     }
 
     world.addAll(grid);
@@ -174,19 +185,21 @@ class TimeSanGame extends FlameGame
     executingAction = true;
 
     try {
-      // Disable a hex of the borders
-      HexCell hexToDisable = grid.firstWhere((e) => e.idHex == gridBorders[0],
-          orElse: () => emptyHex);
-      if (hexToDisable.idHex != hexDestination.idHex) {
-        gridBorders.removeAt(0);
-        hexToDisable.isDisabled = true;
-      }
-      if (gridBorders.isEmpty) {
-        topHexX += 2;
-        topHexZ--;
-        gridBorders = borderGridMap(topHexX, topHexY, topHexZ);
+      if (!staticGame) {
+        // Disable a hex of the borders
+        HexCell hexToDisable = grid.firstWhere((e) => e.idHex == gridBorders[0],
+            orElse: () => emptyHex);
+        if (hexToDisable.idHex != hexDestination.idHex) {
+          gridBorders.removeAt(0);
+          hexToDisable.isDisabled = true;
+        }
         if (gridBorders.isEmpty) {
-          overlays.add(finishMenuId);
+          topHexX += 2;
+          topHexZ--;
+          gridBorders = borderGridMap(topHexX, topHexY, topHexZ);
+          if (gridBorders.isEmpty) {
+            overlays.add(finishMenuId);
+          }
         }
       }
 
@@ -199,10 +212,12 @@ class TimeSanGame extends FlameGame
         hexDestination.switchHex(idSwitch, posSwitch);
         toChange = false;
 
-        player.add(MoveToEffect(
-          currentHex.gridPosition,
-          EffectController(duration: 0.5),
-        ));
+        player.add(
+          MoveToEffect(
+            currentHex.gridPosition,
+            EffectController(duration: 0.5),
+          ),
+        );
       } else {
         currentHex = hexDestination;
         player.add(MoveToEffect(

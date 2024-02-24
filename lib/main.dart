@@ -36,7 +36,6 @@ class MainApp extends StatefulWidget {
 }
 
 class _MainAppState extends State<MainApp> {
-  
   @override
   Widget build(BuildContext context) {
     return StoreProvider<AppState>(
@@ -80,6 +79,8 @@ Widget appWidget(String value) {
   switch (value) {
     case 'Home':
       return const MainMenu();
+    case 'Garden':
+      return gardenInstance();
     case 'Game01':
       return myGameInstance(4);
     case 'Game02':
@@ -103,6 +104,23 @@ Widget myGameInstance(int size) {
           fieldSize: size,
           gameItems: size == 4 ? itemsWorld01 : itemsWorld02,
         ),
+        loadingBuilder: (BuildContext context) {
+          return const Center(
+            child: Text('Loading simulation'),
+          );
+        },
+        overlayBuilderMap: overlayGame(),
+      );
+    },
+  );
+}
+
+Widget gardenInstance() {
+  return StoreConnector<AppState, int>(
+    converter: (store) => store.state.currentGame,
+    builder: (context, currentGame) {
+      return GameWidget(
+        game: TimeSanGame(fieldSize: 6, gameItems: [], staticGame: true),
         loadingBuilder: (BuildContext context) {
           return const Center(
             child: Text('Loading simulation'),

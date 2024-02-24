@@ -44,6 +44,7 @@ Widget gameSelect(BuildContext context, String message) {
                         ? selectGameButton('Level 03',
                             () => selectGameState.setCurrentView('Game03'))
                         : Container(),
+                    selectGameButton('Garden', () => selectGameState.setCurrentView('Garden'))
                   ],
                 ),
               ),
