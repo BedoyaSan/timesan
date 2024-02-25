@@ -57,7 +57,7 @@ class TimeSanGame extends FlameGame
   int playerY = 0;
 
   late HexCell currentHex;
-  List<HexCell> interactiveHex = [];
+  List<HexCell> reactiveHex = [];
 
   HexCell emptyHex = HexCell(Vector2(0, 0), '')..isDisabled = true;
 
@@ -160,6 +160,7 @@ class TimeSanGame extends FlameGame
         }
         grid[aux].itemName = item.itemName;
         grid[aux].isInteractive = item.isInteractive;
+        grid[aux].isReactive = item.isReactive;
         aux++;
       }
     }
@@ -227,7 +228,7 @@ class TimeSanGame extends FlameGame
       }
 
       //Interactive Stuff
-      for (HexCell hex in interactiveHex) {
+      for (HexCell hex in reactiveHex) {
         List<String> neighbors = getNeighborHex(hex);
 
         for (String idHex in neighbors) {
@@ -239,9 +240,13 @@ class TimeSanGame extends FlameGame
             hex.countHex--;
           }
         }
+
+        if(hex.countHex == 0) {
+          hex.isReactive = false;
+        }
       }
 
-      interactiveHex.removeWhere((hex) => hex.countHex == 0);
+      reactiveHex.removeWhere((hex) => hex.countHex == 0);
 
       // Overlay Status
       if (currentHex.isInteractive && !overlays.isActive(executeActionId)) {
@@ -272,7 +277,8 @@ class TimeSanGame extends FlameGame
       currentHex.isInteractive = false;
       currentHex.countHex = 4;
       currentHex.itemName = 'HexFlower';
-      interactiveHex.add(currentHex);
+      currentHex.isReactive = true;
+      reactiveHex.add(currentHex);
       overlays.remove(executeActionId);
     }
   }

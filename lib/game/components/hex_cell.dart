@@ -16,6 +16,7 @@ class HexCell extends PolygonComponent with HasGameReference<TimeSanGame> {
   int countHex = 0;
   bool isDisabled = false;
   bool isInteractive = false;
+  bool isReactive = false;
 
   // @override
   // void update(double dt) {

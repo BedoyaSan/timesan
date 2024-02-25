@@ -7,6 +7,7 @@ class GameItem {
 
   late String itemName;
   bool isInteractive = false;
+  bool isReactive = false;
 }
 
 List<GameItem> itemsWorld01 = [
