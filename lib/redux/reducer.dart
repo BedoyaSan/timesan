@@ -1,15 +1,18 @@
 import 'package:redux/redux.dart';
 
+import '../util/data_fetch.dart';
 import 'actions.dart';
 import 'app_state.dart';
-import 'data_fetch.dart';
 
 final appReducer = combineReducers<AppState>([
   TypedReducer<AppState, SetViewAction>(_setView),
   TypedReducer<AppState, ToggleGameSelectAction>(_toggleSelectGame),
   TypedReducer<AppState, ToggleGameInfoAction>(_toggleGameInfo),
   TypedReducer<AppState, CompleteLevelAction>(_completeLevel),
-  TypedReducer<AppState, GetDataFromUSerAction>(_getDataFromUSer),
+  TypedReducer<AppState, LoadGameDataAction>(_loadGameData),
+  TypedReducer<AppState, LoadingAction>(_loading),
+  TypedReducer<AppState, AddGardenItemAction>(_addGardenItem),
+  TypedReducer<AppState, SaveCloudGameDataAction>(_saveCloudGameData),
 ]);
 
 AppState _setView(AppState state, SetViewAction action) {
@@ -32,7 +35,27 @@ AppState _completeLevel(AppState state, CompleteLevelAction action) {
   return state;
 }
 
-AppState _getDataFromUSer(AppState state, GetDataFromUSerAction action) {
-  state.getState = getDataFromUser();
+AppState _loadGameData(AppState state, LoadGameDataAction action) {
+  state.userId = action.gameData.userId;
+  state.userInfo = action.gameData.userInfo;
+  state.gardenGame = action.gameData.gardenGame;
+  return state;
+}
+
+AppState _loading(AppState state, LoadingAction action) {
+  state.loading = action.loading;
+
+  return state;
+}
+
+AppState _addGardenItem(AppState state, AddGardenItemAction action) {
+  state.gardenGame.boardGameItems.add(action.item);
+
+  return state;
+}
+
+AppState _saveCloudGameData(AppState state, SaveCloudGameDataAction action) {
+  saveDataFromUser(TransferGameData.fromState(state), state.userId);
+
   return state;
 }

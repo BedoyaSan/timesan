@@ -13,6 +13,7 @@ class HexCell extends PolygonComponent with HasGameReference<TimeSanGame> {
   Vector2 gridPosition;
   String idHex;
   String itemName = '';
+  String itemNiceName = '';
   int countHex = 0;
   bool isDisabled = false;
   bool isInteractive = false;
@@ -33,14 +34,14 @@ class HexCell extends PolygonComponent with HasGameReference<TimeSanGame> {
 
     if (itemName != '') {
       switch (itemName) {
-        case 'HexFlower':
-          if (countHex > 2) {
-            game.hexPlant01.render(canvas);
-          } else if (countHex > 0) {
-            game.hexPlant02.render(canvas);
-          } else {
-            game.hexPlant03.render(canvas);
-          }
+        case 'HexFlower01':
+          game.hexPlant01.render(canvas);
+          break;
+        case 'HexFlower02':
+          game.hexPlant02.render(canvas);
+          break;
+        case 'HexFlower03':
+          game.hexPlant03.render(canvas);
           break;
         case 'Water':
           game.waterDrop.render(canvas);

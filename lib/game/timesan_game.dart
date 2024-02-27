@@ -18,7 +18,7 @@ class TimeSanGame extends FlameGame
     with PanDetector, ScrollDetector, ScaleDetector {
   TimeSanGame(
       {required this.fieldSize,
-      required this.gameItems,
+      required this.gameLevel,
       this.staticGame = false})
       : super();
 
@@ -26,8 +26,8 @@ class TimeSanGame extends FlameGame
   late List<HexCell> grid;
 
   int fieldSize;
-  List<GameItem> gameItems;
   bool staticGame;
+  GameLevelData gameLevel;
 
   //Sprites
   late SpriteComponent defaultHex;
@@ -73,6 +73,7 @@ class TimeSanGame extends FlameGame
   final informationId = 'InformationMenu';
   final finishMenuId = 'FinishMenu';
   final gameInfoId = 'GameInfo';
+  final infoExitId = 'InfoAndExitMenu';
 
   @override
   Color backgroundColor() => const Color.fromARGB(244, 82, 89, 130);
@@ -151,8 +152,8 @@ class TimeSanGame extends FlameGame
     } else {
       // Load Items into grid
       int aux = 0;
-      gameItems.shuffle();
-      for (GameItem item in gameItems) {
+      gameLevel.items.shuffle();
+      for (GameItem item in gameLevel.items) {
         while (gridBorders.any((element) =>
             element == grid[aux].idHex ||
             currentHex.idHex == grid[aux].idHex)) {
@@ -161,6 +162,7 @@ class TimeSanGame extends FlameGame
         grid[aux].itemName = item.itemName;
         grid[aux].isInteractive = item.isInteractive;
         grid[aux].isReactive = item.isReactive;
+        grid[aux].itemNiceName = item.itemNiceName;
         aux++;
       }
     }
@@ -235,13 +237,23 @@ class TimeSanGame extends FlameGame
           HexCell hexDestination =
               grid.firstWhere((e) => e.idHex == idHex, orElse: () => emptyHex);
 
-          if (!hexDestination.isDisabled &&
-              hexDestination.itemName == 'Water') {
-            hex.countHex--;
+          //TO DO -- Refactor
+          if (hex.itemName.contains('HexFlower')) {
+            if (!hexDestination.isDisabled &&
+                hexDestination.itemName == 'Water') {
+              hex.countHex--;
+              if (hex.countHex == 0) {
+                hex.itemName = 'HexFlower03';
+                hex.itemNiceName = 'Medium Hex Flower';
+              } else if (hex.countHex <= 2) {
+                hex.itemName = 'HexFlower02';
+                hex.itemNiceName = 'Hex Flower';
+              }
+            }
           }
         }
 
-        if(hex.countHex == 0) {
+        if (hex.countHex == 0) {
           hex.isReactive = false;
         }
       }
@@ -262,6 +274,15 @@ class TimeSanGame extends FlameGame
           overlays.isActive(informationId)) {
         overlays.remove(informationId);
       }
+
+      //Check winning condition
+      if (!staticGame) {
+        int quantity =
+            grid.where((hex) => hex.itemName == gameLevel.winningItem).length;
+        if (quantity >= gameLevel.winningQuantity) {
+          overlays.add(finishMenuId);
+        }
+      }
     } catch (e) {
       //Something went wrong, one can wonder where
     } finally {
@@ -276,7 +297,8 @@ class TimeSanGame extends FlameGame
     if (currentHex.itemName == 'HexBush') {
       currentHex.isInteractive = false;
       currentHex.countHex = 4;
-      currentHex.itemName = 'HexFlower';
+      currentHex.itemName = 'HexFlower01';
+      currentHex.itemNiceName = 'Small Hex Flower';
       currentHex.isReactive = true;
       reactiveHex.add(currentHex);
       overlays.remove(executeActionId);

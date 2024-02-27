@@ -49,7 +49,7 @@ class MainMenu extends StatelessWidget {
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Text(
-                          'Welcome, ${(FirebaseAuth.instance.currentUser != null) ? (FirebaseAuth.instance.currentUser?.displayName ?? '') : 'Anonymous user'}',
+                          'Welcome, ${(FirebaseAuth.instance.currentUser != null) ? (FirebaseAuth.instance.currentUser?.displayName ?? 'Anonymous user') : ''}',
                           style: const TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.bold,

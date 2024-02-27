@@ -33,6 +33,8 @@ Widget gameSelect(BuildContext context, String message) {
                     color: Colors.black),
                 padding: const EdgeInsets.all(25),
                 child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     selectGameButton('Level 01',
                         () => selectGameState.setCurrentView('Game01')),
@@ -44,7 +46,8 @@ Widget gameSelect(BuildContext context, String message) {
                         ? selectGameButton('Level 03',
                             () => selectGameState.setCurrentView('Game03'))
                         : Container(),
-                    selectGameButton('Garden', () => selectGameState.setCurrentView('Garden'))
+                    selectGameButton('Garden',
+                        () => selectGameState.setCurrentView('Garden'))
                   ],
                 ),
               ),
@@ -74,7 +77,11 @@ GestureDetector selectGameButton(String label, VoidCallback selectGame) {
           label,
           textAlign: TextAlign.center,
           textDirection: TextDirection.ltr,
-          style: GoogleFonts.rubikGlitch(color: Colors.white, fontSize: 16),
+          style: GoogleFonts.rubikGlitch(
+            color: Colors.white,
+            fontSize: 16,
+            decoration: TextDecoration.none,
+          ),
         ),
       ),
     ),

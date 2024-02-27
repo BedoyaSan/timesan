@@ -1,3 +1,6 @@
+import '../util/garden.dart';
+import 'app_state.dart';
+
 class SetViewAction {
   final String view;
 
@@ -9,4 +12,22 @@ class ToggleGameSelectAction {}
 
 class CompleteLevelAction {}
 
-class GetDataFromUSerAction {}
+class LoadGameDataAction {
+  final TransferGameData gameData;
+
+  LoadGameDataAction(this.gameData);
+}
+
+class LoadingAction {
+  final bool loading;
+
+  LoadingAction(this.loading);
+}
+
+class AddGardenItemAction {
+  final GardenItem item;
+
+  AddGardenItemAction(this.item);
+}
+
+class SaveCloudGameDataAction {}
