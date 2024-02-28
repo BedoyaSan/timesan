@@ -551,3 +551,33 @@ List<String> getNeighborHex(HexCell hex) {
   neighbors.add('${x - 1}-${y - 1}');
   return neighbors;
 }
+
+GardenData getGardenData(TimeSanGame game) {
+  GardenData garden = GardenData();
+
+  for (HexCell hex in game.grid) {
+    if (hex.idHex != '') {
+      garden.boardGameItems.add(GardenItem(
+        hex.itemName,
+        hex.itemNiceName,
+        hex.idHex,
+        hex.countHex,
+        hex.isInteractive,
+        hex.isReactive,
+      ));
+    }
+  }
+
+  for(GardenItem item in game.gardenInventory) {
+    garden.boardGameItems.add(GardenItem(
+        item.itemName,
+        item.itemNiceName,
+        item.idHex,
+        item.countHex,
+        item.isInteractive,
+        item.isReactive,
+      ));
+  }
+
+  return garden;
+}

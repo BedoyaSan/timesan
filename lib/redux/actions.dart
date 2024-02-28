@@ -30,4 +30,10 @@ class AddGardenItemAction {
   AddGardenItemAction(this.item);
 }
 
+class SaveGardenDataAction {
+  final GardenData garden;
+
+  SaveGardenDataAction(this.garden);
+}
+
 class SaveCloudGameDataAction {}

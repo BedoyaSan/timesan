@@ -12,6 +12,7 @@ final appReducer = combineReducers<AppState>([
   TypedReducer<AppState, LoadGameDataAction>(_loadGameData),
   TypedReducer<AppState, LoadingAction>(_loading),
   TypedReducer<AppState, AddGardenItemAction>(_addGardenItem),
+  TypedReducer<AppState, SaveGardenDataAction>(_saveGardenData),
   TypedReducer<AppState, SaveCloudGameDataAction>(_saveCloudGameData),
 ]);
 
@@ -54,10 +55,13 @@ AppState _addGardenItem(AppState state, AddGardenItemAction action) {
   return state;
 }
 
+AppState _saveGardenData(AppState state, SaveGardenDataAction action) {
+  state.gardenGame = action.garden;
+
+  return state;
+}
+
 AppState _saveCloudGameData(AppState state, SaveCloudGameDataAction action) {
-  print("We have");
-  print(state.userId);
-  print(state.currentView);
   saveDataFromUser(TransferGameData.fromState(state), state.userId);
 
   return state;

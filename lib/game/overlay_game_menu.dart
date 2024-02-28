@@ -99,13 +99,21 @@ Map<String, Widget Function(BuildContext, TimeSanGame)> overlayGame() {
                     ),
                     StoreConnector<AppState, Function>(
                       converter: (store) {
-                        return (String view) {
-                          store.dispatch(SetViewAction(view));
+                        return () {
+                          if(game.staticGame) {
+                            store.dispatch(LoadingAction(true));
+                            store.dispatch(SaveGardenDataAction(getGardenData(game)));
+                            store.dispatch(SaveCloudGameDataAction());
+                            store.dispatch(SetViewAction('Home'));
+                            store.dispatch(LoadingAction(false));
+                          } else {
+                            store.dispatch(SetViewAction('Home'));
+                          }
                         };
                       },
                       builder: (context, callback) {
                         return GestureDetector(
-                          onTap: () => callback('Home'),
+                          onTap: () => callback(),
                           child: Container(
                             width: 200,
                             margin: const EdgeInsets.only(top: 16),
@@ -200,20 +208,20 @@ Map<String, Widget Function(BuildContext, TimeSanGame)> overlayGame() {
         right: 100,
         child: StoreConnector<AppState, Function>(
           converter: (store) {
-            return (String view) {
+            return () {
               store.dispatch(LoadingAction(true));
               store.dispatch(CompleteLevelAction());
               store.dispatch(
                   AddGardenItemAction(GardenItem('HexFlower03', 'Hex Flower')));
               store.dispatch(SaveCloudGameDataAction());
-              store.dispatch(SetViewAction(view));
+              store.dispatch(SetViewAction('Home'));
               store.dispatch(LoadingAction(false));
             };
           },
           builder: (context, callback) {
             return FloatingActionButton(
               onPressed: () {
-                callback('Home');
+                callback();
               },
               backgroundColor: Colors.blue.shade900,
               foregroundColor: Colors.white,
