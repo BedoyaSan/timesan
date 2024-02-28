@@ -556,7 +556,7 @@ GardenData getGardenData(TimeSanGame game) {
   GardenData garden = GardenData();
 
   for (HexCell hex in game.grid) {
-    if (hex.idHex != '') {
+    if (hex.itemName != '') {
       garden.boardGameItems.add(GardenItem(
         hex.itemName,
         hex.itemNiceName,
