@@ -55,6 +55,9 @@ AppState _addGardenItem(AppState state, AddGardenItemAction action) {
 }
 
 AppState _saveCloudGameData(AppState state, SaveCloudGameDataAction action) {
+  print("We have");
+  print(state.userId);
+  print(state.currentView);
   saveDataFromUser(TransferGameData.fromState(state), state.userId);
 
   return state;

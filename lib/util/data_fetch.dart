@@ -36,7 +36,9 @@ dynamic getDataFromUser(String userId) async {
 
 void saveDataFromUser(TransferGameData gameData, String userId) async {
   try {
-    await DataFetch.databaseReference.child('userData/$userId').set(gameData.toJson());
+    if(userId != '') {
+      await DataFetch.databaseReference.child('userData/$userId').set(gameData.toJson());
+    }
   }catch (e) {
     print('Something went wrong on storing data');
     print(e);

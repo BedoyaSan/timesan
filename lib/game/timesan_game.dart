@@ -10,6 +10,7 @@ import 'package:flame/game.dart';
 import '../util/assets.dart';
 
 import '../util/game_item.dart';
+import '../util/garden.dart';
 import 'components/hex_cell.dart';
 import 'components/player.dart';
 import 'config.dart';
@@ -19,15 +20,18 @@ class TimeSanGame extends FlameGame
   TimeSanGame(
       {required this.fieldSize,
       required this.gameLevel,
-      this.staticGame = false})
+      this.staticGame = false,
+      this.gardenData})
       : super();
 
   late Player player;
   late List<HexCell> grid;
 
   int fieldSize;
-  bool staticGame;
   GameLevelData gameLevel;
+
+  bool staticGame;
+  GardenData? gardenData;
 
   //Sprites
   late SpriteComponent defaultHex;
@@ -61,6 +65,8 @@ class TimeSanGame extends FlameGame
 
   HexCell emptyHex = HexCell(Vector2(0, 0), '')..isDisabled = true;
 
+  List<GardenItem> gardenInventory = [];
+
   //Grid borders
   List<String> gridBorders = [];
   int topHexX = 0;
@@ -74,6 +80,7 @@ class TimeSanGame extends FlameGame
   final finishMenuId = 'FinishMenu';
   final gameInfoId = 'GameInfo';
   final infoExitId = 'InfoAndExitMenu';
+  final welcomeScreenId = 'WelcomeScreen';
 
   @override
   Color backgroundColor() => const Color.fromARGB(244, 82, 89, 130);
@@ -148,9 +155,30 @@ class TimeSanGame extends FlameGame
     currentHex =
         grid.firstWhere((e) => e.idHex == centerHexId, orElse: () => emptyHex);
 
+    // Load Items into grid
     if (staticGame) {
+      if (gardenData != null && gardenData!.boardGameItems.isNotEmpty) {
+        for (GardenItem item in gardenData!.boardGameItems) {
+          if (item.idHex == '') {
+            gardenInventory.add(item);
+          } else {
+            HexCell hexItem = grid.firstWhere((e) => e.idHex == item.idHex,
+                orElse: () => emptyHex);
+            if (!hexItem.isDisabled) {
+              hexItem.countHex = item.countHex;
+              hexItem.itemName = item.itemName;
+              hexItem.itemNiceName = item.itemNiceName;
+              hexItem.isInteractive = item.isInteractive;
+              hexItem.isReactive = item.isReactive;
+
+              if (item.isReactive) {
+                reactiveHex.add(hexItem);
+              }
+            }
+          }
+        }
+      }
     } else {
-      // Load Items into grid
       int aux = 0;
       gameLevel.items.shuffle();
       for (GameItem item in gameLevel.items) {
@@ -180,6 +208,7 @@ class TimeSanGame extends FlameGame
     camera.follow(player);
 
     overlays.add(settingsMenuId);
+    overlays.add(welcomeScreenId);
 
     debugMode = false;
   }

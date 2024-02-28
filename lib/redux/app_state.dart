@@ -73,7 +73,7 @@ class TransferGameData {
       : currentGame = data['currentGame'] as int,
         userId = data['userId'] as String,
         userInfo = data['userInfo'] as String,
-        gardenGame = data['gardenGame'] == null ? GardenData() : GardenData.fromJson(data['gardenGame'] as List<Map<String, dynamic>>);
+        gardenGame = data['gardenGame'] == null ? GardenData() : GardenData.fromJson(data['gardenGame'] as List<dynamic>);
 
   Map<String, dynamic> toJson() {
     return {

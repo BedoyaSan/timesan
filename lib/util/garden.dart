@@ -12,14 +12,17 @@ class GardenData {
     return json;
   }
 
-  GardenData.fromJson(List<Map<String, dynamic>> json)
+  GardenData.fromJson(List<dynamic> json)
       : boardGameItems = getFromJson(json);
 }
 
-List<GardenItem> getFromJson(List<Map<String, dynamic>> json) {
+List<GardenItem> getFromJson(List<dynamic> json) {
   List<GardenItem> boardGameItems = [];
-  for (Map<String, dynamic> jsonItem in json) {
-    boardGameItems.add(GardenItem.fromJson(jsonItem));
+  for (dynamic jsonItem in json) {
+    if(jsonItem is Map<String, dynamic>) {
+      boardGameItems.add(GardenItem.fromJson(jsonItem));
+    }
+    
   }
   return boardGameItems;
 }

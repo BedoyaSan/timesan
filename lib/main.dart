@@ -64,6 +64,8 @@ class _MainAppState extends State<MainApp> {
       }
     } catch (e) {
       //
+      print("There was an error at loading user data");
+      print(e);
     } finally {
       widget.store.dispatch(LoadingAction(false));
     }
