@@ -100,9 +100,10 @@ Map<String, Widget Function(BuildContext, TimeSanGame)> overlayGame() {
                     StoreConnector<AppState, Function>(
                       converter: (store) {
                         return () {
-                          if(game.staticGame) {
+                          if (game.staticGame) {
                             store.dispatch(LoadingAction(true));
-                            store.dispatch(SaveGardenDataAction(getGardenData(game)));
+                            store.dispatch(
+                                SaveGardenDataAction(getGardenData(game)));
                             store.dispatch(SaveCloudGameDataAction());
                             store.dispatch(SetViewAction('Home'));
                             store.dispatch(LoadingAction(false));
@@ -150,6 +151,7 @@ Map<String, Widget Function(BuildContext, TimeSanGame)> overlayGame() {
         ),
       );
     },
+    // Message to showing at game start
     'WelcomeScreen': (BuildContext context, TimeSanGame game) {
       return GestureDetector(
         onTap: () => game.overlays.remove(game.welcomeScreenId),
@@ -282,6 +284,142 @@ Map<String, Widget Function(BuildContext, TimeSanGame)> overlayGame() {
           ),
         ),
       );
-    }
+    },
+    // Button to open the Inventory
+    'InventoryButton': (BuildContext context, TimeSanGame game) {
+      return Positioned(
+          top: 100,
+          right: 20,
+          child: FloatingActionButton(
+            onPressed: () {
+              if (game.overlays.isActive(game.inventoryGameId)) {
+                game.overlays.remove(game.inventoryGameId);
+              } else {
+                game.overlays.add(game.inventoryGameId);
+              }
+            },
+            backgroundColor: Colors.blue.shade900,
+            foregroundColor: Colors.white,
+            child: const Icon(Icons.inventory),
+          ));
+    },
+    // Inventory
+    'InventoryGame': (BuildContext context, TimeSanGame game) {
+      return GestureDetector(
+        onTap: () {
+          game.overlays.remove(game.inventoryGameId);
+        },
+        child: Container(
+          height: MediaQuery.of(context).size.height,
+          width: MediaQuery.of(context).size.width,
+          color: Colors.black.withOpacity(0.7),
+          child: Center(
+            child: Padding(
+              padding: const EdgeInsets.only(left: 20, right: 20),
+              child: Container(
+                decoration: const BoxDecoration(
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(25),
+                      bottomRight: Radius.circular(25),
+                    ),
+                    color: Colors.black),
+                padding: const EdgeInsets.all(25),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      game.currentHex.itemName == ''
+                          ? 'Select the item to be placed'
+                          : 'Move to an empty position to place an item',
+                      style: GoogleFonts.robotoCondensed(
+                        color: game.currentHex.itemName == ''
+                            ? Colors.white
+                            : Colors.red.shade800,
+                        fontSize: 28,
+                        decoration: TextDecoration.none,
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    game.currentHex.itemName == ''
+                        ? ListView(
+                            shrinkWrap: true,
+                            children: _inventoryList(game),
+                          )
+                        : Container(),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+    },
   };
+}
+
+List<Widget> _inventoryList(TimeSanGame game) {
+  List<Widget> items = [];
+
+  if (game.gardenInventory.isEmpty) {
+    items.add(Text(
+      'Play some regular levels to get more items',
+      textAlign: TextAlign.center,
+      textDirection: TextDirection.ltr,
+      style: GoogleFonts.rubikGlitch(
+        color: Colors.white,
+        fontSize: 16,
+        decoration: TextDecoration.none,
+      ),
+    ));
+  } else {
+    for (GardenItem item in game.gardenInventory) {
+      items.add(GestureDetector(
+        onTap: () {
+          game.currentHex.itemName = item.itemName;
+          game.currentHex.itemNiceName = item.itemNiceName;
+          game.currentHex.countHex = item.countHex;
+          game.currentHex.isReactive = item.isReactive;
+          game.currentHex.isInteractive = item.isInteractive;
+
+          if (item.isReactive) {
+            game.reactiveHex.add(game.currentHex);
+          }
+
+          game.gardenInventory.remove(item);
+
+          game.overlays.remove(game.inventoryGameId);
+          game.overlays.add(game.informationId);
+
+        },
+        child: Container(
+          width: 200,
+          margin: const EdgeInsets.only(top: 16),
+          decoration: const BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage(AssetsUI.hexBorderButton),
+              fit: BoxFit.fill,
+            ),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(15.0),
+            child: Text(
+              item.itemNiceName,
+              textAlign: TextAlign.center,
+              textDirection: TextDirection.ltr,
+              style: GoogleFonts.rubikGlitch(
+                color: Colors.white,
+                fontSize: 16,
+                decoration: TextDecoration.none,
+              ),
+            ),
+          ),
+        ),
+      ));
+    }
+  }
+
+  return items;
 }

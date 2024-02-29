@@ -7,6 +7,7 @@ import 'firebase_options.dart';
 import 'game/overlay_game_menu.dart';
 import 'redux/actions.dart';
 import 'redux/app_state.dart';
+import 'ui/about_screen.dart';
 import 'util/data_fetch.dart';
 import 'redux/reducer.dart';
 import 'ui/auth_user.dart';
@@ -17,6 +18,8 @@ import 'util/game_item.dart';
 import 'game/timesan_game.dart';
 import 'package:flutter/material.dart';
 import 'package:redux/redux.dart';
+
+import 'util/garden.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -81,6 +84,7 @@ class _MainAppState extends State<MainApp> {
                 store.state.currentView,
                 store.state.gameInfo,
                 store.state.selectGame,
+                store.state.about,
                 store.state.loading),
             builder: (context, mainState) {
               return Stack(
@@ -97,8 +101,13 @@ class _MainAppState extends State<MainApp> {
                           context,
                           '- Move around the map an interact with the elements\n'
                           '- Hold when moving for change the next cell object with the current one\n'
-                          '- Win by finding a specific object, in the basic games\n'
-                          '- Keep playing to unlock the garden!')
+                          '- Win by finding a specific object, in the basic games')
+                      : Container(),
+                  mainState.about
+                      ? aboutScreen(
+                          context,
+                          'Made with Flutter\n'
+                          'By San <3')
                       : Container(),
                   mainState.loading
                       ? Container(
@@ -167,8 +176,15 @@ Widget myGameInstance(int size) {
           gameLevel: size == 4 ? gameWorld01 : gameWorld02,
         ),
         loadingBuilder: (BuildContext context) {
-          return const Center(
-            child: Text('Loading simulation'),
+          return Center(
+            child: Text(
+              'Loading simulation',
+              style: GoogleFonts.robotoCondensed(
+                color: Colors.white,
+                fontSize: 24,
+                decoration: TextDecoration.none,
+              ),
+            ),
           );
         },
         overlayBuilderMap: overlayGame(),
@@ -178,18 +194,26 @@ Widget myGameInstance(int size) {
 }
 
 Widget gardenInstance() {
-  return StoreConnector<AppState, int>(
-    converter: (store) => store.state.currentGame,
-    builder: (context, currentGame) {
+  return StoreConnector<AppState, GardenData>(
+    converter: (store) => store.state.gardenGame,
+    builder: (context, gardenData) {
       return GameWidget(
         game: TimeSanGame(
           fieldSize: 6,
           gameLevel: GameLevelData([], '', 0),
           staticGame: true,
+          gardenData: gardenData,
         ),
         loadingBuilder: (BuildContext context) {
-          return const Center(
-            child: Text('Loading simulation'),
+          return Center(
+            child: Text(
+              'Loading simulation',
+              style: GoogleFonts.robotoCondensed(
+                color: Colors.white,
+                fontSize: 24,
+                decoration: TextDecoration.none,
+              ),
+            ),
           );
         },
         overlayBuilderMap: overlayGame(),

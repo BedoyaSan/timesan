@@ -9,6 +9,7 @@ class SetViewAction {
 
 class ToggleGameInfoAction {}
 class ToggleGameSelectAction {}
+class ToggleGameAboutAction {}
 
 class CompleteLevelAction {}
 

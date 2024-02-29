@@ -64,11 +64,12 @@ class MainMenu extends StatelessWidget {
                       children: [
                         mainButton('Start simulation', 'selectGame'),
                         mainButton('How to play', 'gameInfo'),
-                        mainButton(
-                            (FirebaseAuth.instance.currentUser == null)
-                                ? 'Log in'
-                                : 'User info',
-                            'Authentication'),
+                        // mainButton(
+                        //     (FirebaseAuth.instance.currentUser == null)
+                        //         ? 'Log in'
+                        //         : 'User info',
+                        //     'Authentication'),
+                        mainButton('About', 'about'),
                       ],
                     ),
                     Padding(
@@ -102,6 +103,8 @@ class MainMenu extends StatelessWidget {
             return () => store.dispatch(ToggleGameInfoAction());
           case 'Authentication':
             return () => store.dispatch(SetViewAction(value));
+          case 'about':
+            return () => store.dispatch(ToggleGameAboutAction());
 
           default:
             return () => store.dispatch(SetViewAction('Home'));

@@ -81,6 +81,8 @@ class TimeSanGame extends FlameGame
   final gameInfoId = 'GameInfo';
   final infoExitId = 'InfoAndExitMenu';
   final welcomeScreenId = 'WelcomeScreen';
+  final inventoryButtonId = 'InventoryButton';
+  final inventoryGameId = 'InventoryGame';
 
   @override
   Color backgroundColor() => const Color.fromARGB(244, 82, 89, 130);
@@ -208,6 +210,11 @@ class TimeSanGame extends FlameGame
     camera.follow(player);
 
     overlays.add(settingsMenuId);
+
+    if (staticGame) {
+      overlays.add(inventoryButtonId);
+    }
+
     overlays.add(welcomeScreenId);
 
     debugMode = false;
@@ -568,15 +575,17 @@ GardenData getGardenData(TimeSanGame game) {
     }
   }
 
-  for(GardenItem item in game.gardenInventory) {
-    garden.boardGameItems.add(GardenItem(
+  for (GardenItem item in game.gardenInventory) {
+    garden.boardGameItems.add(
+      GardenItem(
         item.itemName,
         item.itemNiceName,
         item.idHex,
         item.countHex,
         item.isInteractive,
         item.isReactive,
-      ));
+      ),
+    );
   }
 
   return garden;
