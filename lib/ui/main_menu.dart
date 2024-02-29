@@ -48,15 +48,22 @@ class MainMenu extends StatelessWidget {
                       width: 300,
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: Text(
-                          'Welcome, ${(FirebaseAuth.instance.currentUser != null) ? (FirebaseAuth.instance.currentUser?.displayName ?? 'Anonymous user') : ''}',
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16.0,
-                            decoration: TextDecoration.none,
-                          ),
-                          textDirection: TextDirection.ltr,
+                        child: StoreConnector<AppState, String>(
+                          converter: (store) => store.state.userId,
+                          builder: (context, userId) {
+                            return Text(
+                              userId == ''
+                                  ? ''
+                                  : 'Welcome, ${FirebaseAuth.instance.currentUser?.displayName ?? 'Anonymous user'}',
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16.0,
+                                decoration: TextDecoration.none,
+                              ),
+                              textDirection: TextDirection.ltr,
+                            );
+                          },
                         ),
                       ),
                     ),

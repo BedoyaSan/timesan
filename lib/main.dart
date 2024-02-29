@@ -59,16 +59,21 @@ class _MainAppState extends State<MainApp> {
         String? userId = FirebaseAuth.instance.currentUser?.uid;
         if (userId != null) {
           var gameData = await getDataFromUser(userId);
-          if (gameData != null && gameData is Map<String, dynamic>) {
-            TransferGameData loadData = TransferGameData.fromJson(gameData);
-            widget.store.dispatch(LoadGameDataAction(loadData));
+          if (gameData != null) {
+            TransferGameData? loadData;
+            if (gameData is Map<String, dynamic>) {
+              loadData = TransferGameData.fromJson(gameData);
+            } else if (gameData is TransferGameData) {
+              loadData = gameData;
+            }
+            if (loadData != null) {
+              widget.store.dispatch(LoadGameDataAction(loadData));
+            }
           }
         }
       }
     } catch (e) {
       //
-      print("There was an error at loading user data");
-      print(e);
     } finally {
       widget.store.dispatch(LoadingAction(false));
     }

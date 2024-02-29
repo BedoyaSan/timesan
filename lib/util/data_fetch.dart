@@ -22,26 +22,26 @@ dynamic getDataFromUser(String userId) async {
   } else {
     TransferGameData gameData = TransferGameData();
     gameData.userId = userId;
-    
+
     await DataFetch.databaseReference
         .child('userData/$userId')
-        .set(gameData.toJson())
-        .then(
-      (value) {
-        return value;
-      },
-    );
+        .set(gameData.toJson());
+
+    return gameData;
   }
 }
 
 void saveDataFromUser(TransferGameData gameData, String userId) async {
   try {
-    if(userId != '') {
-      await DataFetch.databaseReference.child('userData/$userId').set(gameData.toJson());
+    print("We start saving data with the user $userId");
+    if (userId != '') {
+      print(gameData.toJson());
+      await DataFetch.databaseReference
+          .child('userData/$userId')
+          .set(gameData.toJson());
     }
-  }catch (e) {
+  } catch (e) {
     print('Something went wrong on storing data');
     print(e);
   }
-  
 }
