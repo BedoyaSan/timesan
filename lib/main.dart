@@ -179,6 +179,7 @@ Widget myGameInstance(int size) {
         game: TimeSanGame(
           fieldSize: size,
           gameLevel: size == 4 ? gameWorld01 : gameWorld02,
+          currentGame: currentGame,
         ),
         loadingBuilder: (BuildContext context) {
           return Center(
@@ -205,9 +206,10 @@ Widget gardenInstance() {
       return GameWidget(
         game: TimeSanGame(
           fieldSize: 6,
-          gameLevel: GameLevelData([], '', 0),
+          gameLevel: GameLevelData([], 0, '', 0),
           staticGame: true,
           gardenData: gardenData,
+          currentGame: 0,
         ),
         loadingBuilder: (BuildContext context) {
           return Center(

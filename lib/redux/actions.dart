@@ -11,7 +11,11 @@ class ToggleGameInfoAction {}
 class ToggleGameSelectAction {}
 class ToggleGameAboutAction {}
 
-class CompleteLevelAction {}
+class CompleteLevelAction {
+  final int levelNumber;
+
+  CompleteLevelAction(this.levelNumber);
+}
 
 class LoadGameDataAction {
   final TransferGameData gameData;

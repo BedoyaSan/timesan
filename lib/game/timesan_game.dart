@@ -21,7 +21,8 @@ class TimeSanGame extends FlameGame
       {required this.fieldSize,
       required this.gameLevel,
       this.staticGame = false,
-      this.gardenData})
+      this.gardenData,
+      required this.currentGame})
       : super();
 
   late Player player;
@@ -29,6 +30,7 @@ class TimeSanGame extends FlameGame
 
   int fieldSize;
   GameLevelData gameLevel;
+  int currentGame;
 
   bool staticGame;
   GardenData? gardenData;
@@ -67,6 +69,8 @@ class TimeSanGame extends FlameGame
 
   List<GardenItem> gardenInventory = [];
 
+  bool canTakeItem = false;
+
   //Grid borders
   List<String> gridBorders = [];
   int topHexX = 0;
@@ -83,6 +87,8 @@ class TimeSanGame extends FlameGame
   final welcomeScreenId = 'WelcomeScreen';
   final inventoryButtonId = 'InventoryButton';
   final inventoryGameId = 'InventoryGame';
+  final takeItemButtonId = 'TakeItemButton';
+  final takeItemActionId = 'TakeItemAction';
 
   @override
   Color backgroundColor() => const Color.fromARGB(244, 82, 89, 130);
@@ -213,6 +219,8 @@ class TimeSanGame extends FlameGame
 
     if (staticGame) {
       overlays.add(inventoryButtonId);
+    } else {
+      canTakeItem = currentGame >= gameLevel.levelNumber;
     }
 
     overlays.add(welcomeScreenId);
@@ -302,6 +310,15 @@ class TimeSanGame extends FlameGame
       } else if (!currentHex.isInteractive &&
           overlays.isActive(executeActionId)) {
         overlays.remove(executeActionId);
+      }
+
+      if (canTakeItem) {
+        if (currentHex.itemName != '' && !overlays.isActive(takeItemButtonId)) {
+          overlays.add(takeItemButtonId);
+        } else if (currentHex.itemName == '' &&
+            overlays.isActive(takeItemButtonId)) {
+          overlays.remove(takeItemButtonId);
+        }
       }
 
       if (currentHex.itemName != '' && !overlays.isActive(informationId)) {

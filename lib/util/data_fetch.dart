@@ -33,15 +33,12 @@ dynamic getDataFromUser(String userId) async {
 
 void saveDataFromUser(TransferGameData gameData, String userId) async {
   try {
-    print("We start saving data with the user $userId");
     if (userId != '') {
-      print(gameData.toJson());
       await DataFetch.databaseReference
           .child('userData/$userId')
           .set(gameData.toJson());
     }
   } catch (e) {
-    print('Something went wrong on storing data');
-    print(e);
+    //
   }
 }

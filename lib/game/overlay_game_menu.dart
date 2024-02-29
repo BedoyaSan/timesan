@@ -212,9 +212,11 @@ Map<String, Widget Function(BuildContext, TimeSanGame)> overlayGame() {
           converter: (store) {
             return () {
               store.dispatch(LoadingAction(true));
-              store.dispatch(CompleteLevelAction());
-              store.dispatch(
-                  AddGardenItemAction(GardenItem('HexFlower03', 'Hex Flower')));
+              store.dispatch(CompleteLevelAction(game.gameLevel.levelNumber));
+              store.dispatch(AddGardenItemAction(GardenItem(
+                'HexFlower03',
+                'Hex Flower',
+              )));
               store.dispatch(SaveCloudGameDataAction());
               store.dispatch(SetViewAction('Home'));
               store.dispatch(LoadingAction(false));
@@ -305,6 +307,7 @@ Map<String, Widget Function(BuildContext, TimeSanGame)> overlayGame() {
     },
     // Inventory
     'InventoryGame': (BuildContext context, TimeSanGame game) {
+      ScrollController _controller = ScrollController();
       return GestureDetector(
         onTap: () {
           game.overlays.remove(game.inventoryGameId);
@@ -345,10 +348,119 @@ Map<String, Widget Function(BuildContext, TimeSanGame)> overlayGame() {
                     ),
                     game.currentHex.itemName == ''
                         ? ListView(
+                            physics: const AlwaysScrollableScrollPhysics(),
+                            controller: _controller,
                             shrinkWrap: true,
+                            addRepaintBoundaries: false,
                             children: _inventoryList(game),
                           )
                         : Container(),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+    },
+    // Button to take current item with you
+    'TakeItemButton': (BuildContext context, TimeSanGame game) {
+      return Positioned(
+        top: 100,
+        right: 20,
+        child: FloatingActionButton(
+          onPressed: () {
+            if (game.overlays.isActive(game.takeItemActionId)) {
+              game.overlays.remove(game.takeItemActionId);
+            } else {
+              game.overlays.add(game.takeItemActionId);
+            }
+          },
+          backgroundColor: Colors.blue.shade900,
+          foregroundColor: Colors.white,
+          child: const Icon(Icons.track_changes),
+        ),
+      );
+    },
+    // Confirmation on taking an item to the garden
+    'TakeItemAction': (BuildContext context, TimeSanGame game) {
+      return GestureDetector(
+        onTap: () => game.overlays.remove(game.takeItemActionId),
+        child: Container(
+          height: MediaQuery.of(context).size.height,
+          width: MediaQuery.of(context).size.width,
+          color: Colors.black.withOpacity(0.7),
+          child: Center(
+            child: Padding(
+              padding: const EdgeInsets.only(left: 20, right: 20),
+              child: Container(
+                decoration: const BoxDecoration(
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(25),
+                      bottomRight: Radius.circular(25),
+                    ),
+                    color: Colors.black),
+                padding: const EdgeInsets.all(25),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      'You\'ll receive a copy of ${game.currentHex.itemNiceName} into your garden\nThis may stop time itself',
+                      style: GoogleFonts.robotoCondensed(
+                        color: Colors.white,
+                        fontSize: 24,
+                        decoration: TextDecoration.none,
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    StoreConnector<AppState, Function>(
+                      converter: (store) {
+                        return () {
+                          store.dispatch(LoadingAction(true));
+                          store.dispatch(AddGardenItemAction(GardenItem(
+                              game.currentHex.itemName,
+                              game.currentHex.itemNiceName,
+                              '',
+                              game.currentHex.countHex,
+                              game.currentHex.isInteractive,
+                              game.currentHex.isReactive)));
+                          store.dispatch(SaveCloudGameDataAction());
+                          store.dispatch(SetViewAction('Home'));
+                          store.dispatch(LoadingAction(false));
+                        };
+                      },
+                      builder: (context, callback) {
+                        return GestureDetector(
+                          onTap: () => callback(),
+                          child: Container(
+                            width: 200,
+                            margin: const EdgeInsets.only(top: 16),
+                            decoration: const BoxDecoration(
+                              image: DecorationImage(
+                                image: AssetImage(AssetsUI.hexBorderButton),
+                                fit: BoxFit.fill,
+                              ),
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(15.0),
+                              child: Text(
+                                'Take it!',
+                                textAlign: TextAlign.center,
+                                textDirection: TextDirection.ltr,
+                                style: GoogleFonts.rubikGlitch(
+                                  color: Colors.white,
+                                  fontSize: 16,
+                                  decoration: TextDecoration.none,
+                                ),
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    )
                   ],
                 ),
               ),
@@ -392,7 +504,6 @@ List<Widget> _inventoryList(TimeSanGame game) {
 
           game.overlays.remove(game.inventoryGameId);
           game.overlays.add(game.informationId);
-
         },
         child: Container(
           width: 200,

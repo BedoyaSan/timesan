@@ -38,7 +38,9 @@ AppState _toggleGameAbout(AppState state, ToggleGameAboutAction action) {
 }
 
 AppState _completeLevel(AppState state, CompleteLevelAction action) {
-  state.currentGame = state.currentGame + 1;
+  if(action.levelNumber > state.currentGame) {
+    state.currentGame = state.currentGame + 1;
+  }
   return state;
 }
 
@@ -46,6 +48,8 @@ AppState _loadGameData(AppState state, LoadGameDataAction action) {
   state.userId = action.gameData.userId;
   state.userInfo = action.gameData.userInfo;
   state.gardenGame = action.gameData.gardenGame;
+  state.currentGame = action.gameData.currentGame;
+  
   return state;
 }
 
