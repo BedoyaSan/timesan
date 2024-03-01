@@ -56,7 +56,7 @@ class TimeSanGame extends FlameGame
   bool onMovement = false;
   bool executingAction = false;
   bool toChange = false;
-  late Timer hexSwitch;
+  Timer? hexSwitch;
 
   //Player initial position
   int playerX = 0;
@@ -70,6 +70,7 @@ class TimeSanGame extends FlameGame
   List<GardenItem> gardenInventory = [];
 
   bool canTakeItem = false;
+  bool takingItem = false;
 
   //Grid borders
   List<String> gridBorders = [];
@@ -89,6 +90,7 @@ class TimeSanGame extends FlameGame
   final inventoryGameId = 'InventoryGame';
   final takeItemButtonId = 'TakeItemButton';
   final takeItemActionId = 'TakeItemAction';
+  final winGameLevelId = 'WinGameLevel';
 
   @override
   Color backgroundColor() => const Color.fromARGB(244, 82, 89, 130);
@@ -288,10 +290,10 @@ class TimeSanGame extends FlameGame
               hex.countHex--;
               if (hex.countHex == 0) {
                 hex.itemName = 'HexFlower03';
-                hex.itemNiceName = 'Medium Hex Flower';
+                hex.itemNiceName = 'Hex Flower';
               } else if (hex.countHex <= 2) {
                 hex.itemName = 'HexFlower02';
-                hex.itemNiceName = 'Hex Flower';
+                hex.itemNiceName = 'Medium Hex Flower';
               }
             }
           }
@@ -366,8 +368,8 @@ class TimeSanGame extends FlameGame
 
   @override
   void onPanCancel() {
-    if (hexSwitch.isActive) {
-      hexSwitch.cancel();
+    if (hexSwitch != null) {
+      hexSwitch?.cancel();
     }
     toChange = false;
     onMovement = false;
@@ -390,8 +392,8 @@ class TimeSanGame extends FlameGame
   void onPanEnd(DragEndInfo info) {
     if (!executingAction) {
       onMovement = false;
-      if (hexSwitch.isActive) {
-        hexSwitch.cancel();
+      if (hexSwitch != null) {
+        hexSwitch?.cancel();
       }
       var dx = (finalMovePos.x - initialMovePos.x);
       var dy = (finalMovePos.y - initialMovePos.y);

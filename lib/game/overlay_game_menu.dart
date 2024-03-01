@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:redux/redux.dart';
 
 import '../redux/actions.dart';
 import '../redux/app_state.dart';
@@ -14,52 +15,55 @@ Map<String, Widget Function(BuildContext, TimeSanGame)> overlayGame() {
     // Action Button -> Allow interaction with the current item
     'ExecuteActionMenu': (BuildContext context, TimeSanGame game) {
       return Positioned(
-          bottom: 20,
-          right: 20,
-          child: FloatingActionButton(
-            onPressed: () {
-              game.interactWithItem();
-            },
-            backgroundColor: Colors.blue.shade900,
-            foregroundColor: Colors.white,
-            child: const Icon(Icons.search),
-          ));
+        bottom: 20,
+        right: 20,
+        child: FloatingActionButton(
+          onPressed: () {
+            game.interactWithItem();
+          },
+          backgroundColor: Colors.blue.shade900,
+          foregroundColor: Colors.white,
+          child: const Icon(Icons.search),
+        ),
+      );
     },
     // Information button -> Open the information of the current item
     'InformationMenu': (BuildContext context, TimeSanGame game) {
       return Positioned(
-          bottom: 100,
-          right: 20,
-          child: FloatingActionButton(
-            onPressed: () {
-              if (game.overlays.isActive(game.gameInfoId)) {
-                game.overlays.remove(game.gameInfoId);
-              } else {
-                game.overlays.add(game.gameInfoId);
-              }
-            },
-            backgroundColor: Colors.blue.shade900,
-            foregroundColor: Colors.white,
-            child: const Icon(Icons.info),
-          ));
+        bottom: 100,
+        right: 20,
+        child: FloatingActionButton(
+          onPressed: () {
+            if (game.overlays.isActive(game.gameInfoId)) {
+              game.overlays.remove(game.gameInfoId);
+            } else {
+              game.overlays.add(game.gameInfoId);
+            }
+          },
+          backgroundColor: Colors.blue.shade900,
+          foregroundColor: Colors.white,
+          child: const Icon(Icons.info),
+        ),
+      );
     },
     // Settings button -> Shows the menu with information and exit options
     'SettingsMenu': (BuildContext context, TimeSanGame game) {
       return Positioned(
-          top: 20,
-          right: 20,
-          child: FloatingActionButton(
-            onPressed: () {
-              if (game.overlays.isActive(game.infoExitId)) {
-                game.overlays.remove(game.infoExitId);
-              } else {
-                game.overlays.add(game.infoExitId);
-              }
-            },
-            backgroundColor: Colors.blue.shade900,
-            foregroundColor: Colors.white,
-            child: const Icon(Icons.settings),
-          ));
+        top: 20,
+        right: 20,
+        child: FloatingActionButton(
+          onPressed: () {
+            if (game.overlays.isActive(game.infoExitId)) {
+              game.overlays.remove(game.infoExitId);
+            } else {
+              game.overlays.add(game.infoExitId);
+            }
+          },
+          backgroundColor: Colors.blue.shade900,
+          foregroundColor: Colors.white,
+          child: const Icon(Icons.settings),
+        ),
+      );
     },
     // Container of information on how to win and an exit button
     'InfoAndExitMenu': (BuildContext context, TimeSanGame game) {
@@ -87,7 +91,7 @@ Map<String, Widget Function(BuildContext, TimeSanGame)> overlayGame() {
                     Text(
                       game.staticGame
                           ? 'Time will continue'
-                          : 'You\'ll need to find ${game.gameLevel.winningQuantity} ${game.gameLevel.winningQuantity == 1 ? 'version of' : 'versions of'} ${game.gameLevel.winningItem.replaceAll(RegExp(r"\d"), "")} to win this level!',
+                          : 'You\'ll need to find ${game.gameLevel.winningQuantity} ${game.gameLevel.winningQuantity == 1 ? 'version of' : 'versions of'} ${game.gameLevel.winningItemNiceName} to win this level',
                       style: GoogleFonts.robotoCondensed(
                         color: Colors.white,
                         fontSize: 24,
@@ -177,7 +181,7 @@ Map<String, Widget Function(BuildContext, TimeSanGame)> overlayGame() {
                     Text(
                       game.staticGame
                           ? 'Welcome to the garden'
-                          : 'You\'ll need to find ${game.gameLevel.winningQuantity} ${game.gameLevel.winningQuantity == 1 ? 'version of' : 'versions of'} ${game.gameLevel.winningItem.replaceAll(RegExp(r"\d"), "")} to win this level!',
+                          : 'You\'ll need to find ${game.gameLevel.winningQuantity} ${game.gameLevel.winningQuantity == 1 ? 'version of' : 'versions of'} ${game.gameLevel.winningItemNiceName} to win this level!',
                       style: GoogleFonts.robotoCondensed(
                         color: Colors.white,
                         fontSize: 24,
@@ -208,30 +212,13 @@ Map<String, Widget Function(BuildContext, TimeSanGame)> overlayGame() {
       return Positioned(
         bottom: 20,
         right: 100,
-        child: StoreConnector<AppState, Function>(
-          converter: (store) {
-            return () {
-              store.dispatch(LoadingAction(true));
-              store.dispatch(CompleteLevelAction(game.gameLevel.levelNumber));
-              store.dispatch(AddGardenItemAction(GardenItem(
-                'HexFlower03',
-                'Hex Flower',
-              )));
-              store.dispatch(SaveCloudGameDataAction());
-              store.dispatch(SetViewAction('Home'));
-              store.dispatch(LoadingAction(false));
-            };
+        child: FloatingActionButton(
+          onPressed: () {
+            game.overlays.add(game.winGameLevelId);
           },
-          builder: (context, callback) {
-            return FloatingActionButton(
-              onPressed: () {
-                callback();
-              },
-              backgroundColor: Colors.blue.shade900,
-              foregroundColor: Colors.white,
-              child: const Icon(Icons.flag),
-            );
-          },
+          backgroundColor: Colors.blue.shade900,
+          foregroundColor: Colors.white,
+          child: const Icon(Icons.flag),
         ),
       );
     },
@@ -290,31 +277,36 @@ Map<String, Widget Function(BuildContext, TimeSanGame)> overlayGame() {
     // Button to open the Inventory
     'InventoryButton': (BuildContext context, TimeSanGame game) {
       return Positioned(
-          top: 100,
-          right: 20,
-          child: FloatingActionButton(
-            onPressed: () {
-              if (game.overlays.isActive(game.inventoryGameId)) {
-                game.overlays.remove(game.inventoryGameId);
-              } else {
-                game.overlays.add(game.inventoryGameId);
-              }
-            },
-            backgroundColor: Colors.blue.shade900,
-            foregroundColor: Colors.white,
-            child: const Icon(Icons.inventory),
-          ));
+        top: 100,
+        right: 20,
+        child: FloatingActionButton(
+          onPressed: () {
+            if (game.overlays.isActive(game.inventoryGameId)) {
+              game.overlays.remove(game.inventoryGameId);
+            } else {
+              game.overlays.add(game.inventoryGameId);
+            }
+          },
+          backgroundColor: Colors.blue.shade900,
+          foregroundColor: Colors.white,
+          child: const Icon(Icons.inventory),
+        ),
+      );
     },
     // Inventory
     'InventoryGame': (BuildContext context, TimeSanGame game) {
-      ScrollController _controller = ScrollController();
+      ScrollController controller = ScrollController();
+
+      double gameHeight = MediaQuery.of(context).size.height;
+      double gameWidth = MediaQuery.of(context).size.width;
+
       return GestureDetector(
         onTap: () {
           game.overlays.remove(game.inventoryGameId);
         },
         child: Container(
-          height: MediaQuery.of(context).size.height,
-          width: MediaQuery.of(context).size.width,
+          height: gameHeight,
+          width: gameWidth,
           color: Colors.black.withOpacity(0.7),
           child: Center(
             child: Padding(
@@ -347,12 +339,17 @@ Map<String, Widget Function(BuildContext, TimeSanGame)> overlayGame() {
                       height: 20,
                     ),
                     game.currentHex.itemName == ''
-                        ? ListView(
-                            physics: const AlwaysScrollableScrollPhysics(),
-                            controller: _controller,
-                            shrinkWrap: true,
-                            addRepaintBoundaries: false,
-                            children: _inventoryList(game),
+                        ? SizedBox(
+                            height: gameHeight * 0.5,
+                            width: (gameWidth * 0.5) > 250
+                                ? 250
+                                : (gameWidth * 0.5),
+                            child: ListView(
+                              physics: const AlwaysScrollableScrollPhysics(),
+                              controller: controller,
+                              shrinkWrap: true,
+                              children: _inventoryList(game),
+                            ),
                           )
                         : Container(),
                   ],
@@ -375,6 +372,7 @@ Map<String, Widget Function(BuildContext, TimeSanGame)> overlayGame() {
             } else {
               game.overlays.add(game.takeItemActionId);
             }
+            game.takingItem = true;
           },
           backgroundColor: Colors.blue.shade900,
           foregroundColor: Colors.white,
@@ -385,7 +383,10 @@ Map<String, Widget Function(BuildContext, TimeSanGame)> overlayGame() {
     // Confirmation on taking an item to the garden
     'TakeItemAction': (BuildContext context, TimeSanGame game) {
       return GestureDetector(
-        onTap: () => game.overlays.remove(game.takeItemActionId),
+        onTap: () {
+          game.overlays.remove(game.takeItemActionId);
+          game.takingItem = false;
+        },
         child: Container(
           height: MediaQuery.of(context).size.height,
           width: MediaQuery.of(context).size.width,
@@ -416,52 +417,102 @@ Map<String, Widget Function(BuildContext, TimeSanGame)> overlayGame() {
                     const SizedBox(
                       height: 20,
                     ),
-                    StoreConnector<AppState, Function>(
-                      converter: (store) {
-                        return () {
-                          store.dispatch(LoadingAction(true));
-                          store.dispatch(AddGardenItemAction(GardenItem(
-                              game.currentHex.itemName,
-                              game.currentHex.itemNiceName,
-                              '',
-                              game.currentHex.countHex,
-                              game.currentHex.isInteractive,
-                              game.currentHex.isReactive)));
-                          store.dispatch(SaveCloudGameDataAction());
-                          store.dispatch(SetViewAction('Home'));
-                          store.dispatch(LoadingAction(false));
-                        };
+                    GestureDetector(
+                      onTap: () {
+                        game.overlays.add(game.winGameLevelId);
+                        game.overlays.remove(game.takeItemActionId);
                       },
-                      builder: (context, callback) {
-                        return GestureDetector(
-                          onTap: () => callback(),
-                          child: Container(
-                            width: 200,
-                            margin: const EdgeInsets.only(top: 16),
-                            decoration: const BoxDecoration(
-                              image: DecorationImage(
-                                image: AssetImage(AssetsUI.hexBorderButton),
-                                fit: BoxFit.fill,
-                              ),
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.all(15.0),
-                              child: Text(
-                                'Take it!',
-                                textAlign: TextAlign.center,
-                                textDirection: TextDirection.ltr,
-                                style: GoogleFonts.rubikGlitch(
-                                  color: Colors.white,
-                                  fontSize: 16,
-                                  decoration: TextDecoration.none,
-                                ),
-                              ),
+                      child: Container(
+                        width: 200,
+                        margin: const EdgeInsets.only(top: 16),
+                        decoration: const BoxDecoration(
+                          image: DecorationImage(
+                            image: AssetImage(AssetsUI.hexBorderButton),
+                            fit: BoxFit.fill,
+                          ),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(15.0),
+                          child: Text(
+                            'Take it!',
+                            textAlign: TextAlign.center,
+                            textDirection: TextDirection.ltr,
+                            style: GoogleFonts.rubikGlitch(
+                              color: Colors.white,
+                              fontSize: 16,
+                              decoration: TextDecoration.none,
                             ),
                           ),
-                        );
-                      },
-                    )
+                        ),
+                      ),
+                    ),
                   ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+    },
+    // Container with Game completion message
+    'WinGameLevel': (BuildContext context, TimeSanGame game) {
+      return GestureDetector(
+        onTap: () {
+          Store<AppState> store = StoreProvider.of<AppState>(context);
+
+          store.dispatch(LoadingAction(true));
+          store.dispatch(CompleteLevelAction(game.gameLevel.levelNumber));
+          if (game.takingItem) {
+            store.dispatch(
+              AddGardenItemAction(
+                GardenItem(
+                    game.currentHex.itemName,
+                    game.currentHex.itemNiceName,
+                    '',
+                    game.currentHex.countHex,
+                    game.currentHex.isInteractive,
+                    game.currentHex.isReactive),
+              ),
+            );
+          } else {
+            store.dispatch(
+              AddGardenItemAction(
+                GardenItem(
+                  game.gameLevel.winningItem,
+                  game.gameLevel.winningItemNiceName,
+                ),
+              ),
+            );
+          }
+          store.dispatch(SaveCloudGameDataAction());
+          store.dispatch(SetViewAction('Home'));
+          store.dispatch(ToggleGameSelectAction());
+          store.dispatch(LoadingAction(false));
+        },
+        child: Container(
+          height: MediaQuery.of(context).size.height,
+          width: MediaQuery.of(context).size.width,
+          color: Colors.black.withOpacity(0.7),
+          child: Center(
+            child: Padding(
+              padding: const EdgeInsets.only(left: 20, right: 20),
+              child: Container(
+                decoration: const BoxDecoration(
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(25),
+                      bottomRight: Radius.circular(25),
+                    ),
+                    color: Colors.black),
+                padding: const EdgeInsets.all(25),
+                child: Text(
+                  game.takingItem
+                      ? 'a ${game.currentHex.itemNiceName} is going to your garden!\nLet\'s hope time fix the space you\'re leaving here'
+                      : 'You\'ve found a ${game.gameLevel.winningItemNiceName}\nThis complete level ${game.gameLevel.levelNumber.toString().padLeft(2, '0')}, congratulations!',
+                  style: GoogleFonts.robotoCondensed(
+                    color: Colors.white,
+                    fontSize: 24,
+                    decoration: TextDecoration.none,
+                  ),
                 ),
               ),
             ),
@@ -499,6 +550,9 @@ List<Widget> _inventoryList(TimeSanGame game) {
           if (item.isReactive) {
             game.reactiveHex.add(game.currentHex);
           }
+          if (item.isInteractive) {
+            game.overlays.add(game.executeActionId);
+          }
 
           game.gardenInventory.remove(item);
 
@@ -506,7 +560,6 @@ List<Widget> _inventoryList(TimeSanGame game) {
           game.overlays.add(game.informationId);
         },
         child: Container(
-          width: 200,
           margin: const EdgeInsets.only(top: 16),
           decoration: const BoxDecoration(
             image: DecorationImage(

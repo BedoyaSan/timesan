@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flame/game.dart';
@@ -83,69 +85,82 @@ class _MainAppState extends State<MainApp> {
   Widget build(BuildContext context) {
     return StoreProvider<AppState>(
       store: widget.store,
-      child: MaterialApp(
-        home: StoreConnector<AppState, AppMainState>(
-            converter: (store) => AppMainState(
-                store.state.currentView,
-                store.state.gameInfo,
-                store.state.selectGame,
-                store.state.about,
-                store.state.loading),
-            builder: (context, mainState) {
-              return Stack(
-                children: [
-                  AnimatedSwitcher(
-                    duration: const Duration(milliseconds: 1250),
-                    // transitionBuilder: (Widget child, Animation<double> animation) =>
-                    //     ScaleTransition(scale: animation, child: child),
-                    child: appWidget(mainState.currentView),
-                  ),
-                  mainState.selectGame ? gameSelect(context, '') : Container(),
-                  mainState.gameInfo
-                      ? infoScreen(
-                          context,
-                          '- Move around the map an interact with the elements\n'
-                          '- Hold when moving for change the next cell object with the current one\n'
-                          '- Win by finding a specific object, in the basic games')
-                      : Container(),
-                  mainState.about
-                      ? aboutScreen(
-                          context,
-                          'Made with Flutter\n'
-                          'By San <3')
-                      : Container(),
-                  mainState.loading
-                      ? Container(
-                          color: const Color.fromARGB(131, 0, 0, 0),
-                          child: Center(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                CircularProgressIndicator(
-                                  color: Colors.red.shade800,
-                                  strokeAlign: 0.9,
-                                  strokeWidth: 10,
-                                ),
-                                Text(
-                                  'Loading data',
-                                  style: GoogleFonts.robotoCondensed(
-                                    color: Colors.white,
-                                    fontSize: 24,
-                                    decoration: TextDecoration.none,
+      child: PopScope(
+        canPop: false,
+        child: MaterialApp(
+          scrollBehavior: const MaterialScrollBehavior().copyWith(
+            dragDevices: {
+              PointerDeviceKind.mouse,
+              PointerDeviceKind.touch,
+              PointerDeviceKind.stylus,
+              PointerDeviceKind.unknown
+            },
+          ),
+          home: StoreConnector<AppState, AppMainState>(
+              converter: (store) => AppMainState(
+                  store.state.currentView,
+                  store.state.gameInfo,
+                  store.state.selectGame,
+                  store.state.about,
+                  store.state.loading),
+              builder: (context, mainState) {
+                return Stack(
+                  children: [
+                    AnimatedSwitcher(
+                      duration: const Duration(milliseconds: 1250),
+                      // transitionBuilder: (Widget child, Animation<double> animation) =>
+                      //     ScaleTransition(scale: animation, child: child),
+                      child: appWidget(mainState.currentView),
+                    ),
+                    mainState.selectGame
+                        ? gameSelect(context, '')
+                        : Container(),
+                    mainState.gameInfo
+                        ? infoScreen(
+                            context,
+                            '- Move around the map an interact with the elements\n'
+                            '- Hold when moving for change the next cell object with the current one\n'
+                            '- Win by finding a specific object, in the basic games')
+                        : Container(),
+                    mainState.about
+                        ? aboutScreen(
+                            context,
+                            'Made with Flutter\n'
+                            'By San <3')
+                        : Container(),
+                    mainState.loading
+                        ? Container(
+                            color: const Color.fromARGB(131, 0, 0, 0),
+                            child: Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  CircularProgressIndicator(
+                                    color: Colors.red.shade800,
+                                    strokeAlign: 0.9,
+                                    strokeWidth: 10,
                                   ),
-                                ),
-                              ],
+                                  Text(
+                                    'Loading data',
+                                    style: GoogleFonts.robotoCondensed(
+                                      color: Colors.white,
+                                      fontSize: 24,
+                                      decoration: TextDecoration.none,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
-                          ),
-                        )
-                      : Container(),
-                ],
-              );
-            }),
-        theme: ThemeData(
-          textTheme: GoogleFonts.robotoCondensedTextTheme(),
+                          )
+                        : Container(),
+                  ],
+                );
+              }),
+          theme: ThemeData(
+            textTheme: GoogleFonts.robotoCondensedTextTheme(),
+          ),
+          debugShowCheckedModeBanner: false,
         ),
-        debugShowCheckedModeBanner: false,
       ),
     );
   }
@@ -206,7 +221,7 @@ Widget gardenInstance() {
       return GameWidget(
         game: TimeSanGame(
           fieldSize: 6,
-          gameLevel: GameLevelData([], 0, '', 0),
+          gameLevel: GameLevelData([], 0, '', '', 0),
           staticGame: true,
           gardenData: gardenData,
           currentGame: 0,

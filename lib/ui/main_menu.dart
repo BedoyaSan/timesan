@@ -82,7 +82,7 @@ class MainMenu extends StatelessWidget {
                     Padding(
                       padding: const EdgeInsets.only(top: 25, right: 15),
                       child: Text(
-                        'Beta version 0.2',
+                        'Beta version 0.5',
                         textAlign: TextAlign.center,
                         textDirection: TextDirection.ltr,
                         style: GoogleFonts.rubikGlitch(
