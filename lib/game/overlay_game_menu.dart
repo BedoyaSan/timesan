@@ -192,7 +192,7 @@ Map<String, Widget Function(BuildContext, TimeSanGame)> overlayGame() {
                       height: 20,
                     ),
                     Text(
-                      game.staticGame ? 'Enjoy your time!' : 'Take your time!',
+                      game.staticGame ? 'Take your time!' : 'Watch your actions!',
                       style: GoogleFonts.robotoCondensed(
                         color: Colors.white,
                         fontSize: 24,

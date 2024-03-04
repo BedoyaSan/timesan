@@ -15,4 +15,14 @@ class AssetsGame {
   static const String hexBush = 'HexBushDefault.png';
 
   static const String arrowSwitch = 'ArrowSwitch.png';
+
+  static const String botL00 = 'BotLeft00.png';
+  static const String botL01 = 'BotLeft01.png';
+  static const String botL10 = 'BotLeft10.png';
+  static const String botL11 = 'BotLeft11.png';
+
+  static const String botR00 = 'BotRight00.png';
+  static const String botR01 = 'BotRight01.png';
+  static const String botR10 = 'BotRight10.png';
+  static const String botR11 = 'BotRight11.png';
 }

@@ -44,8 +44,11 @@ class TimeSanGame extends FlameGame
   late SpriteComponent waterDrop;
   late SpriteComponent hexBushDefault;
 
-  // late SpriteAnimation hexBush;
-  // late SpriteAnimationComponent hexBushAnimationItem;
+  late SpriteComponent botLeft;
+  late SpriteComponent botRight;
+
+  late SpriteAnimationComponent botLeftAnimation;
+  late SpriteAnimationComponent botRightAnimation;
 
   late SpriteComponent arrowSwitch;
 
@@ -140,19 +143,41 @@ class TimeSanGame extends FlameGame
       size: Vector2(hexMainX * 2, hexMainY * 2),
     );
 
-    // Load Animations
-    // List<SpriteAnimationFrame> hexBushList = [];
-    // hexBushList.add(SpriteAnimationFrame(
-    //     Sprite(await Flame.images.load(AssetsGame.hexBush01A)), 100));
-    // hexBushList.add(SpriteAnimationFrame(
-    //     Sprite(await Flame.images.load(AssetsGame.hexBush01B)), 10));
-    // hexBushList.add(SpriteAnimationFrame(
-    //     Sprite(await Flame.images.load(AssetsGame.hexBush01C)), 10));
-    // hexBush = SpriteAnimation(hexBushList);
-    // hexBushAnimationItem = SpriteAnimationComponent(
-    //   animation: hexBush,
-    //   size: Vector2(hexMainX * 2, hexMainY * 2),
-    // );
+    botLeft = SpriteComponent(
+      sprite: Sprite(await Flame.images.load(AssetsGame.botL00)),
+      size: Vector2(hexMainX * 2, hexMainY * 2),
+    );
+    botRight = SpriteComponent(
+      sprite: Sprite(await Flame.images.load(AssetsGame.botR00)),
+      size: Vector2(hexMainX * 2, hexMainY * 2),
+    );
+
+    botLeftAnimation = SpriteAnimationComponent(
+      animation: SpriteAnimation([
+        SpriteAnimationFrame(
+            Sprite(await Flame.images.load(AssetsGame.botL00)), 0.5),
+        SpriteAnimationFrame(
+            Sprite(await Flame.images.load(AssetsGame.botL01)), 0.5),
+        SpriteAnimationFrame(
+            Sprite(await Flame.images.load(AssetsGame.botL10)), 0.5),
+        SpriteAnimationFrame(
+            Sprite(await Flame.images.load(AssetsGame.botL11)), 0.5),
+      ]),
+      size: Vector2(hexMainX * 2, hexMainY * 2),
+    );
+    botRightAnimation = SpriteAnimationComponent(
+      animation: SpriteAnimation([
+        SpriteAnimationFrame(
+            Sprite(await Flame.images.load(AssetsGame.botR00)), 0.5),
+        SpriteAnimationFrame(
+            Sprite(await Flame.images.load(AssetsGame.botR01)), 0.5),
+        SpriteAnimationFrame(
+            Sprite(await Flame.images.load(AssetsGame.botR10)), 0.5),
+        SpriteAnimationFrame(
+            Sprite(await Flame.images.load(AssetsGame.botR11)), 0.5),
+      ]),
+      size: Vector2(hexMainX * 2, hexMainY * 2),
+    );
 
     // Load Grid Information
     grid = gridBuilder(fieldSize);
@@ -209,8 +234,8 @@ class TimeSanGame extends FlameGame
 
     player = Player()
       ..position = Vector2(0, 0)
-      ..width = 50
-      ..height = 100
+      ..width = hexMainX * 2
+      ..height = hexMainY * 2
       ..anchor = Anchor.center;
     world.add(player);
 

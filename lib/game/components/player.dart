@@ -5,11 +5,28 @@ import 'package:flutter/material.dart';
 import '../timesan_game.dart';
 
 class Player extends PositionComponent with HasGameReference<TimeSanGame> {
-  static final _paint = Paint()..color = Colors.white;
+  @override
+  void update(double dt) {
+    game.botLeftAnimation.update(dt);
+    game.botRightAnimation.update(dt);
+  }
 
   @override
   void render(Canvas canvas) {
-    canvas.drawRect(size.toRect(), _paint);
+    if (game.angleMovement > 90 && game.angleMovement < 270) {
+      if (game.executingAction) {
+        game.botLeftAnimation.render(canvas);
+      } else {
+        game.botLeft.render(canvas);
+      }
+    } else {
+      if (game.executingAction) {
+        game.botRightAnimation.render(canvas);
+      } else {
+        game.botRight.render(canvas);
+      }
+    }
+
     if (game.toChange) {
       game.arrowSwitch.render(canvas);
     }
