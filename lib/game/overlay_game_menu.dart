@@ -192,7 +192,9 @@ Map<String, Widget Function(BuildContext, TimeSanGame)> overlayGame() {
                       height: 20,
                     ),
                     Text(
-                      game.staticGame ? 'Take your time!' : 'Watch your actions!',
+                      game.staticGame
+                          ? 'Take your time!'
+                          : 'Watch your actions!',
                       style: GoogleFonts.robotoCondensed(
                         color: Colors.white,
                         fontSize: 24,
@@ -214,7 +216,12 @@ Map<String, Widget Function(BuildContext, TimeSanGame)> overlayGame() {
         right: 100,
         child: FloatingActionButton(
           onPressed: () {
-            game.overlays.add(game.winGameLevelId);
+            if(game.hasWonGame) {
+              game.overlays.add(game.winGameLevelId);
+            } else {
+              game.overlays.add(game.timeOutId);
+            }
+            
           },
           backgroundColor: Colors.blue.shade900,
           foregroundColor: Colors.white,
@@ -517,6 +524,79 @@ Map<String, Widget Function(BuildContext, TimeSanGame)> overlayGame() {
               ),
             ),
           ),
+        ),
+      );
+    },
+    // Container with time out
+    'TimeOutGame': (BuildContext context, TimeSanGame game) {
+      return GestureDetector(
+        onTap: () {
+          Store<AppState> store = StoreProvider.of<AppState>(context);
+          store.dispatch(LoadingAction(true));
+          store.dispatch(SetViewAction('Home'));
+          store.dispatch(ToggleGameSelectAction());
+          store.dispatch(LoadingAction(false));
+        },
+        child: Container(
+          height: MediaQuery.of(context).size.height,
+          width: MediaQuery.of(context).size.width,
+          color: Colors.black.withOpacity(0.7),
+          child: Center(
+            child: Padding(
+              padding: const EdgeInsets.only(left: 20, right: 20),
+              child: Container(
+                decoration: const BoxDecoration(
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(25),
+                      bottomRight: Radius.circular(25),
+                    ),
+                    color: Colors.black),
+                padding: const EdgeInsets.all(25),
+                child: Text(
+                  'Time is up, better luck next time!',
+                  style: GoogleFonts.robotoCondensed(
+                    color: Colors.white,
+                    fontSize: 24,
+                    decoration: TextDecoration.none,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+    },
+    // Zoom up!
+    'zoomUp': (BuildContext context, TimeSanGame game) {
+      return Positioned(
+        top: 20,
+        left: 20,
+        child: FloatingActionButton(
+          onPressed: () {
+            game.camera.viewfinder.zoom -= -1 * 0.1;
+            game.clampZoom();
+          },
+          mini: true,
+          backgroundColor: Colors.blue.shade900,
+          foregroundColor: Colors.white,
+          child: const Icon(Icons.zoom_in),
+        ),
+      );
+    },
+    // Zoom down!
+    'zoomDown': (BuildContext context, TimeSanGame game) {
+      return Positioned(
+        top: 80,
+        left: 20,
+        child: FloatingActionButton(
+          onPressed: () {
+            game.camera.viewfinder.zoom -= 1 * 0.1;
+            game.clampZoom();
+          },
+          mini: true,
+          backgroundColor: Colors.blue.shade900,
+          foregroundColor: Colors.white,
+          child: const Icon(Icons.zoom_out),
         ),
       );
     },

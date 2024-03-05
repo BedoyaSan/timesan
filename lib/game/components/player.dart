@@ -14,21 +14,21 @@ class Player extends PositionComponent with HasGameReference<TimeSanGame> {
   @override
   void render(Canvas canvas) {
     if (game.angleMovement > 90 && game.angleMovement < 270) {
-      if (game.executingAction) {
+      if (game.toChange) {
+        game.botLeftSwitch.render(canvas);
+      } else if (game.executingAction) {
         game.botLeftAnimation.render(canvas);
       } else {
         game.botLeft.render(canvas);
       }
     } else {
-      if (game.executingAction) {
+      if (game.toChange) {
+        game.botRightSwitch.render(canvas);
+      } else if (game.executingAction) {
         game.botRightAnimation.render(canvas);
       } else {
         game.botRight.render(canvas);
       }
-    }
-
-    if (game.toChange) {
-      game.arrowSwitch.render(canvas);
     }
   }
 }

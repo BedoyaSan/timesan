@@ -14,7 +14,8 @@ class AssetsGame {
   static const String waterPuddle = 'WaterPuddle.png';
   static const String hexBush = 'HexBushDefault.png';
 
-  static const String arrowSwitch = 'ArrowSwitch.png';
+  static const String botLSwitch = 'BotLeftSwitch.png';
+  static const String botRSwitch = 'BotRightSwitch.png';
 
   static const String botL00 = 'BotLeft00.png';
   static const String botL01 = 'BotLeft01.png';

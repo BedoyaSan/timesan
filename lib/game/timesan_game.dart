@@ -46,11 +46,11 @@ class TimeSanGame extends FlameGame
 
   late SpriteComponent botLeft;
   late SpriteComponent botRight;
+  late SpriteComponent botLeftSwitch;
+  late SpriteComponent botRightSwitch;
 
   late SpriteAnimationComponent botLeftAnimation;
   late SpriteAnimationComponent botRightAnimation;
-
-  late SpriteComponent arrowSwitch;
 
   // Player movement
   Vector2 initialMovePos = Vector2(0, 0);
@@ -75,6 +75,8 @@ class TimeSanGame extends FlameGame
   bool canTakeItem = false;
   bool takingItem = false;
 
+  bool hasWonGame = false;
+
   //Grid borders
   List<String> gridBorders = [];
   int topHexX = 0;
@@ -94,6 +96,9 @@ class TimeSanGame extends FlameGame
   final takeItemButtonId = 'TakeItemButton';
   final takeItemActionId = 'TakeItemAction';
   final winGameLevelId = 'WinGameLevel';
+  final timeOutId = 'TimeOutGame';
+  final zoomUpId = 'zoomUp';
+  final zoomDownId = 'zoomDown';
 
   @override
   Color backgroundColor() => const Color.fromARGB(244, 82, 89, 130);
@@ -134,10 +139,6 @@ class TimeSanGame extends FlameGame
       sprite: Sprite(await Flame.images.load(AssetsGame.waterPuddle)),
       size: Vector2(hexMainX * 2, hexMainY * 2),
     );
-    arrowSwitch = SpriteComponent(
-      sprite: Sprite(await Flame.images.load(AssetsGame.arrowSwitch)),
-      size: Vector2(50, 50),
-    );
     hexBushDefault = SpriteComponent(
       sprite: Sprite(await Flame.images.load(AssetsGame.hexBush)),
       size: Vector2(hexMainX * 2, hexMainY * 2),
@@ -152,29 +153,38 @@ class TimeSanGame extends FlameGame
       size: Vector2(hexMainX * 2, hexMainY * 2),
     );
 
+    botLeftSwitch = SpriteComponent(
+      sprite: Sprite(await Flame.images.load(AssetsGame.botLSwitch)),
+      size: Vector2(hexMainX * 2, hexMainY * 2),
+    );
+    botRightSwitch = SpriteComponent(
+      sprite: Sprite(await Flame.images.load(AssetsGame.botRSwitch)),
+      size: Vector2(hexMainX * 2, hexMainY * 2),
+    );
+
     botLeftAnimation = SpriteAnimationComponent(
       animation: SpriteAnimation([
         SpriteAnimationFrame(
-            Sprite(await Flame.images.load(AssetsGame.botL00)), 0.5),
+            Sprite(await Flame.images.load(AssetsGame.botL00)), 0.1),
         SpriteAnimationFrame(
-            Sprite(await Flame.images.load(AssetsGame.botL01)), 0.5),
+            Sprite(await Flame.images.load(AssetsGame.botL01)), 0.1),
         SpriteAnimationFrame(
-            Sprite(await Flame.images.load(AssetsGame.botL10)), 0.5),
+            Sprite(await Flame.images.load(AssetsGame.botL10)), 0.1),
         SpriteAnimationFrame(
-            Sprite(await Flame.images.load(AssetsGame.botL11)), 0.5),
+            Sprite(await Flame.images.load(AssetsGame.botL11)), 0.1),
       ]),
       size: Vector2(hexMainX * 2, hexMainY * 2),
     );
     botRightAnimation = SpriteAnimationComponent(
       animation: SpriteAnimation([
         SpriteAnimationFrame(
-            Sprite(await Flame.images.load(AssetsGame.botR00)), 0.5),
+            Sprite(await Flame.images.load(AssetsGame.botR00)), 0.1),
         SpriteAnimationFrame(
-            Sprite(await Flame.images.load(AssetsGame.botR01)), 0.5),
+            Sprite(await Flame.images.load(AssetsGame.botR01)), 0.1),
         SpriteAnimationFrame(
-            Sprite(await Flame.images.load(AssetsGame.botR10)), 0.5),
+            Sprite(await Flame.images.load(AssetsGame.botR10)), 0.1),
         SpriteAnimationFrame(
-            Sprite(await Flame.images.load(AssetsGame.botR11)), 0.5),
+            Sprite(await Flame.images.load(AssetsGame.botR11)), 0.1),
       ]),
       size: Vector2(hexMainX * 2, hexMainY * 2),
     );
@@ -243,6 +253,8 @@ class TimeSanGame extends FlameGame
     camera.follow(player);
 
     overlays.add(settingsMenuId);
+    overlays.add(zoomUpId);
+    overlays.add(zoomDownId);
 
     if (staticGame) {
       overlays.add(inventoryButtonId);
@@ -285,6 +297,18 @@ class TimeSanGame extends FlameGame
             hexDestination.idHex, hexDestination.gridPosition.clone());
         hexDestination.switchHex(idSwitch, posSwitch);
         toChange = false;
+
+        // TO DO - Needs more testing
+        // bool isBorderInitial = gridBorders.any((e) => e == currentHex.idHex);
+        // bool isBorderDestiny = gridBorders.any((e) => e == currentHex.idHex);
+        // if (isBorderInitial && !isBorderDestiny) {
+        //   gridBorders[gridBorders
+        //       .indexWhere((e) => e == hexDestination.idHex)] = currentHex.idHex;
+        // }
+        // if (!isBorderDestiny && isBorderDestiny) {
+        //   gridBorders[gridBorders.indexWhere((e) => e == currentHex.idHex)] =
+        //       hexDestination.idHex;
+        // }
 
         player.add(
           MoveToEffect(
@@ -360,6 +384,7 @@ class TimeSanGame extends FlameGame
         int quantity =
             grid.where((hex) => hex.itemName == gameLevel.winningItem).length;
         if (quantity >= gameLevel.winningQuantity) {
+          hasWonGame = true;
           overlays.add(finishMenuId);
         }
       }
@@ -409,6 +434,13 @@ class TimeSanGame extends FlameGame
           toChange = true;
         }
       });
+    }
+    if (!executingAction) {
+      var dx = (finalMovePos.x - initialMovePos.x);
+      var dy = (finalMovePos.y - initialMovePos.y);
+      dx = (dx == 0) ? 0.01 : dx;
+      dy = (dy == 0) ? 0.01 : dy;
+      angleMovement = calculateAngle(dx, dy);
     }
     finalMovePos = info.eventPosition.global;
   }
