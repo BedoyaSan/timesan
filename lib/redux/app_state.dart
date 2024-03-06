@@ -7,6 +7,7 @@ class AppState {
   bool gameInfo;
   bool selectGame;
   bool about;
+  bool register;
 
   int currentGame;
   GardenData gardenGame;
@@ -20,6 +21,7 @@ class AppState {
         gameInfo = false,
         selectGame = false,
         about = false,
+        register = false,
         currentGame = 0,
         userId = '',
         gardenGame = GardenData();
@@ -31,13 +33,15 @@ class AppMainState {
   bool selectGame;
   bool about;
   bool loading;
+  bool register;
 
   AppMainState(
     this.currentView,
     this.gameInfo,
     this.selectGame,
     this.about,
-    this.loading
+    this.loading,
+    this.register
   );
 }
 

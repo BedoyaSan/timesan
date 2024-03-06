@@ -10,6 +10,7 @@ class SetViewAction {
 class ToggleGameInfoAction {}
 class ToggleGameSelectAction {}
 class ToggleGameAboutAction {}
+class ToggleGameRegisterAction {}
 
 class CompleteLevelAction {
   final int levelNumber;

@@ -10,6 +10,7 @@ import 'game/overlay_game_menu.dart';
 import 'redux/actions.dart';
 import 'redux/app_state.dart';
 import 'ui/about_screen.dart';
+import 'ui/register.dart';
 import 'util/data_fetch.dart';
 import 'redux/reducer.dart';
 import 'ui/auth_user.dart';
@@ -55,9 +56,9 @@ class _MainAppState extends State<MainApp> {
     try {
       widget.store.dispatch(LoadingAction(true));
       if (FirebaseAuth.instance.currentUser == null) {
-        await FirebaseAuth.instance.signInAnonymously();
-      }
-      if (FirebaseAuth.instance.currentUser != null) {
+        widget.store.dispatch(ToggleGameRegisterAction());
+        // await FirebaseAuth.instance.signInAnonymously();
+      } else {
         String? userId = FirebaseAuth.instance.currentUser?.uid;
         if (userId != null) {
           var gameData = await getDataFromUser(userId);
@@ -102,7 +103,8 @@ class _MainAppState extends State<MainApp> {
                   store.state.gameInfo,
                   store.state.selectGame,
                   store.state.about,
-                  store.state.loading),
+                  store.state.loading,
+                  store.state.register),
               builder: (context, mainState) {
                 return Stack(
                   children: [
@@ -128,6 +130,7 @@ class _MainAppState extends State<MainApp> {
                             'Made with Flutter\n'
                             'By San <3')
                         : Container(),
+                    mainState.register ? register(context) : Container(),
                     mainState.loading
                         ? Container(
                             color: const Color.fromARGB(131, 0, 0, 0),

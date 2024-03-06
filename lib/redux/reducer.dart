@@ -9,6 +9,7 @@ final appReducer = combineReducers<AppState>([
   TypedReducer<AppState, ToggleGameSelectAction>(_toggleSelectGame),
   TypedReducer<AppState, ToggleGameInfoAction>(_toggleGameInfo),
   TypedReducer<AppState, ToggleGameAboutAction>(_toggleGameAbout),
+  TypedReducer<AppState, ToggleGameRegisterAction>(_toggleGameRegister),
   TypedReducer<AppState, CompleteLevelAction>(_completeLevel),
   TypedReducer<AppState, LoadGameDataAction>(_loadGameData),
   TypedReducer<AppState, LoadingAction>(_loading),
@@ -34,6 +35,11 @@ AppState _toggleGameInfo(AppState state, ToggleGameInfoAction action) {
 
 AppState _toggleGameAbout(AppState state, ToggleGameAboutAction action) {
   state.about = !state.about;
+  return state;
+}
+
+AppState _toggleGameRegister(AppState state, ToggleGameRegisterAction action) {
+  state.register = !state.register;
   return state;
 }
 
