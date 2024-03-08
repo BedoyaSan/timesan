@@ -10,10 +10,10 @@ import 'game/overlay_game_menu.dart';
 import 'redux/actions.dart';
 import 'redux/app_state.dart';
 import 'ui/about_screen.dart';
+import 'ui/auth_screen.dart';
 import 'ui/register.dart';
 import 'util/data_fetch.dart';
 import 'redux/reducer.dart';
-import 'ui/auth_user.dart';
 import 'ui/game_select.dart';
 import 'ui/info_screen.dart';
 import 'ui/main_menu.dart';
@@ -57,7 +57,6 @@ class _MainAppState extends State<MainApp> {
       widget.store.dispatch(LoadingAction(true));
       if (FirebaseAuth.instance.currentUser == null) {
         widget.store.dispatch(ToggleGameRegisterAction());
-        // await FirebaseAuth.instance.signInAnonymously();
       } else {
         String? userId = FirebaseAuth.instance.currentUser?.uid;
         if (userId != null) {
@@ -76,7 +75,7 @@ class _MainAppState extends State<MainApp> {
         }
       }
     } catch (e) {
-      //
+      // Something went wrong on retrieving user data!
     } finally {
       widget.store.dispatch(LoadingAction(false));
     }
@@ -112,7 +111,7 @@ class _MainAppState extends State<MainApp> {
                       duration: const Duration(milliseconds: 1250),
                       // transitionBuilder: (Widget child, Animation<double> animation) =>
                       //     ScaleTransition(scale: animation, child: child),
-                      child: appWidget(mainState.currentView),
+                      child: appWidget(mainState.currentView, getInitialData),
                     ),
                     mainState.selectGame
                         ? gameSelect(context, '')
@@ -169,7 +168,7 @@ class _MainAppState extends State<MainApp> {
   }
 }
 
-Widget appWidget(String value) {
+Widget appWidget(String value, Future<void> Function() getInitialData) {
   switch (value) {
     case 'Home':
       return const MainMenu();
@@ -182,7 +181,7 @@ Widget appWidget(String value) {
     case 'Game03':
       return myGameInstance(10);
     case 'Authentication':
-      return const AuthUser();
+      return const AuthScreen();
 
     default:
       return const MainMenu();

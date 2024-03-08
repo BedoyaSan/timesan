@@ -79,7 +79,11 @@ Widget register(BuildContext context) {
                 ),
               ),
               GestureDetector(
-                onTap: () {},
+                onTap: () {
+                  Store<AppState> store = StoreProvider.of<AppState>(context);
+                  store.dispatch(ToggleGameRegisterAction());
+                  store.dispatch(SetViewAction('Authentication'));
+                },
                 child: Container(
                   width: 200,
                   margin: const EdgeInsets.only(top: 16),

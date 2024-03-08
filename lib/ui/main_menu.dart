@@ -71,11 +71,7 @@ class MainMenu extends StatelessWidget {
                       children: [
                         mainButton('Start simulation', 'selectGame'),
                         mainButton('How to play', 'gameInfo'),
-                        // mainButton(
-                        //     (FirebaseAuth.instance.currentUser == null)
-                        //         ? 'Log in'
-                        //         : 'User info',
-                        //     'Authentication'),
+                        mainButton('User information', 'Authentication'),
                         mainButton('About', 'about'),
                       ],
                     ),
@@ -109,7 +105,7 @@ class MainMenu extends StatelessWidget {
           case 'gameInfo':
             return () => store.dispatch(ToggleGameInfoAction());
           case 'Authentication':
-            return () => store.dispatch(SetViewAction(value));
+            return () => store.dispatch(SetViewAction('Authentication'));
           case 'about':
             return () => store.dispatch(ToggleGameAboutAction());
 
