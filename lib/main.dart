@@ -44,7 +44,7 @@ class MainApp extends StatefulWidget {
   State<MainApp> createState() => _MainAppState();
 }
 
-class _MainAppState extends State<MainApp> {
+class _MainAppState extends State<MainApp> with AutomaticKeepAliveClientMixin {
   @override
   void initState() {
     super.initState();
@@ -77,12 +77,16 @@ class _MainAppState extends State<MainApp> {
     } catch (e) {
       // Something went wrong on retrieving user data!
     } finally {
+      setState(() {
+        FirebaseAuth.instance.currentUser?.reload();
+      });
       widget.store.dispatch(LoadingAction(false));
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return StoreProvider<AppState>(
       store: widget.store,
       child: PopScope(
@@ -166,6 +170,9 @@ class _MainAppState extends State<MainApp> {
       ),
     );
   }
+  
+  @override
+  bool get wantKeepAlive => true;
 }
 
 Widget appWidget(String value, Future<void> Function() getInitialData) {

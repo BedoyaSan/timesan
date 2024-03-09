@@ -6,6 +6,10 @@ import '../redux/app_state.dart';
 import '../util/assets.dart';
 
 Widget gameSelect(BuildContext context, String message) {
+  ScrollController controller = ScrollController();
+
+  double gameHeight = MediaQuery.of(context).size.height;
+  double gameWidth = MediaQuery.of(context).size.width;
   return StoreConnector<AppState, GameSelectState>(
     converter: (store) {
       return GameSelectState(store.state.currentGame,
@@ -32,23 +36,28 @@ Widget gameSelect(BuildContext context, String message) {
                     ),
                     color: Colors.black),
                 padding: const EdgeInsets.all(25),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    selectGameButton('Level 01',
-                        () => selectGameState.setCurrentView('Game01')),
-                    selectGameState.currentGame > 0
-                        ? selectGameButton('Level 02',
-                            () => selectGameState.setCurrentView('Game02'))
-                        : Container(),
-                    selectGameState.currentGame > 1
-                        ? selectGameButton('Level 03',
-                            () => selectGameState.setCurrentView('Game03'))
-                        : Container(),
-                    selectGameButton('Garden',
-                        () => selectGameState.setCurrentView('Garden'))
-                  ],
+                child: SizedBox(
+                  height: gameHeight * 0.5,
+                  width: (gameWidth * 0.5) > 250 ? 250 : (gameWidth * 0.5),
+                  child: ListView(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    controller: controller,
+                    shrinkWrap: true,
+                    children: [
+                      selectGameButton('Level 01',
+                          () => selectGameState.setCurrentView('Game01')),
+                      selectGameState.currentGame > 0
+                          ? selectGameButton('Level 02',
+                              () => selectGameState.setCurrentView('Game02'))
+                          : Container(),
+                      selectGameState.currentGame > 1
+                          ? selectGameButton('Level 03',
+                              () => selectGameState.setCurrentView('Game03'))
+                          : Container(),
+                      selectGameButton('Garden',
+                          () => selectGameState.setCurrentView('Garden'))
+                    ],
+                  ),
                 ),
               ),
             ),

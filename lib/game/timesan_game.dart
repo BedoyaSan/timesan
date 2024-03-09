@@ -267,6 +267,13 @@ class TimeSanGame extends FlameGame
     debugMode = false;
   }
 
+  @override
+  void onGameResize(Vector2 size) {
+    super.onGameResize(size);
+  
+    //
+  }
+
   void timeMovement(HexCell hexDestination) {
     executingAction = true;
 
