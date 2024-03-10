@@ -6,6 +6,7 @@ import 'package:flame/game.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'firebase_options.dart';
+import 'game/game_instance.dart';
 import 'game/overlay_game_menu.dart';
 import 'redux/actions.dart';
 import 'redux/app_state.dart';
@@ -44,7 +45,7 @@ class MainApp extends StatefulWidget {
   State<MainApp> createState() => _MainAppState();
 }
 
-class _MainAppState extends State<MainApp> with AutomaticKeepAliveClientMixin {
+class _MainAppState extends State<MainApp> {
   @override
   void initState() {
     super.initState();
@@ -86,7 +87,6 @@ class _MainAppState extends State<MainApp> with AutomaticKeepAliveClientMixin {
 
   @override
   Widget build(BuildContext context) {
-    super.build(context);
     return StoreProvider<AppState>(
       store: widget.store,
       child: PopScope(
@@ -115,7 +115,7 @@ class _MainAppState extends State<MainApp> with AutomaticKeepAliveClientMixin {
                       duration: const Duration(milliseconds: 1250),
                       // transitionBuilder: (Widget child, Animation<double> animation) =>
                       //     ScaleTransition(scale: animation, child: child),
-                      child: appWidget(mainState.currentView, getInitialData),
+                      child: appWidget(mainState.currentView),
                     ),
                     mainState.selectGame
                         ? gameSelect(context, '')
@@ -170,57 +170,26 @@ class _MainAppState extends State<MainApp> with AutomaticKeepAliveClientMixin {
       ),
     );
   }
-  
-  @override
-  bool get wantKeepAlive => true;
 }
 
-Widget appWidget(String value, Future<void> Function() getInitialData) {
+Widget appWidget(String value) {
   switch (value) {
     case 'Home':
       return const MainMenu();
     case 'Garden':
       return gardenInstance();
     case 'Game01':
-      return myGameInstance(4);
+      return const GameInstance(level: 1);
     case 'Game02':
-      return myGameInstance(5);
+      return const GameInstance(level: 2);
     case 'Game03':
-      return myGameInstance(10);
+      return const GameInstance(level: 3);
     case 'Authentication':
       return const AuthScreen();
 
     default:
       return const MainMenu();
   }
-}
-
-Widget myGameInstance(int size) {
-  return StoreConnector<AppState, int>(
-    converter: (store) => store.state.currentGame,
-    builder: (context, currentGame) {
-      return GameWidget(
-        game: TimeSanGame(
-          fieldSize: size,
-          gameLevel: size == 4 ? gameWorld01 : gameWorld02,
-          currentGame: currentGame,
-        ),
-        loadingBuilder: (BuildContext context) {
-          return Center(
-            child: Text(
-              'Loading simulation',
-              style: GoogleFonts.robotoCondensed(
-                color: Colors.white,
-                fontSize: 24,
-                decoration: TextDecoration.none,
-              ),
-            ),
-          );
-        },
-        overlayBuilderMap: overlayGame(),
-      );
-    },
-  );
 }
 
 Widget gardenInstance() {
