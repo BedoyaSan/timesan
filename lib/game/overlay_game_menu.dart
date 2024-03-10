@@ -14,6 +14,7 @@ Map<String, Widget Function(BuildContext, TimeSanGame)> overlayGame() {
   return {
     // Action Button -> Allow interaction with the current item
     'ExecuteActionMenu': (BuildContext context, TimeSanGame game) {
+      double gameHeight = MediaQuery.of(context).size.height;
       return Positioned(
         bottom: 20,
         right: 20,
@@ -21,6 +22,7 @@ Map<String, Widget Function(BuildContext, TimeSanGame)> overlayGame() {
           onPressed: () {
             game.interactWithItem();
           },
+          mini: gameHeight < 450,
           backgroundColor: Colors.blue.shade900,
           foregroundColor: Colors.white,
           child: const Icon(Icons.search),
@@ -29,8 +31,10 @@ Map<String, Widget Function(BuildContext, TimeSanGame)> overlayGame() {
     },
     // Information button -> Open the information of the current item
     'InformationMenu': (BuildContext context, TimeSanGame game) {
+      double gameHeight = MediaQuery.of(context).size.height;
+
       return Positioned(
-        bottom: 100,
+        bottom: gameHeight < 450 ? 80 : 100,
         right: 20,
         child: FloatingActionButton(
           onPressed: () {
@@ -40,6 +44,7 @@ Map<String, Widget Function(BuildContext, TimeSanGame)> overlayGame() {
               game.overlays.add(game.gameInfoId);
             }
           },
+          mini: gameHeight < 450,
           backgroundColor: Colors.blue.shade900,
           foregroundColor: Colors.white,
           child: const Icon(Icons.info),
@@ -48,6 +53,8 @@ Map<String, Widget Function(BuildContext, TimeSanGame)> overlayGame() {
     },
     // Settings button -> Shows the menu with information and exit options
     'SettingsMenu': (BuildContext context, TimeSanGame game) {
+      double gameHeight = MediaQuery.of(context).size.height;
+
       return Positioned(
         top: 20,
         right: 20,
@@ -59,6 +66,7 @@ Map<String, Widget Function(BuildContext, TimeSanGame)> overlayGame() {
               game.overlays.add(game.infoExitId);
             }
           },
+          mini: gameHeight < 450,
           backgroundColor: Colors.blue.shade900,
           foregroundColor: Colors.white,
           child: const Icon(Icons.settings),
@@ -211,18 +219,19 @@ Map<String, Widget Function(BuildContext, TimeSanGame)> overlayGame() {
     },
     // Finish button -> Shows when te winning condition is reached
     'FinishMenu': (BuildContext context, TimeSanGame game) {
+      double gameHeight = MediaQuery.of(context).size.height;
       return Positioned(
         bottom: 20,
-        right: 100,
+        right: gameHeight < 450 ? 80 : 100,
         child: FloatingActionButton(
           onPressed: () {
-            if(game.hasWonGame) {
+            if (game.hasWonGame) {
               game.overlays.add(game.winGameLevelId);
             } else {
               game.overlays.add(game.timeOutId);
             }
-            
           },
+          mini: gameHeight < 450,
           backgroundColor: Colors.blue.shade900,
           foregroundColor: Colors.white,
           child: const Icon(Icons.flag),
@@ -283,8 +292,10 @@ Map<String, Widget Function(BuildContext, TimeSanGame)> overlayGame() {
     },
     // Button to open the Inventory
     'InventoryButton': (BuildContext context, TimeSanGame game) {
+      double gameHeight = MediaQuery.of(context).size.height;
+
       return Positioned(
-        top: 100,
+        top: gameHeight < 450 ? 80 : 100,
         right: 20,
         child: FloatingActionButton(
           onPressed: () {
@@ -294,6 +305,7 @@ Map<String, Widget Function(BuildContext, TimeSanGame)> overlayGame() {
               game.overlays.add(game.inventoryGameId);
             }
           },
+          mini: gameHeight < 450,
           backgroundColor: Colors.blue.shade900,
           foregroundColor: Colors.white,
           child: const Icon(Icons.inventory),
@@ -369,8 +381,9 @@ Map<String, Widget Function(BuildContext, TimeSanGame)> overlayGame() {
     },
     // Button to take current item with you
     'TakeItemButton': (BuildContext context, TimeSanGame game) {
+      double gameHeight = MediaQuery.of(context).size.height;
       return Positioned(
-        top: 100,
+        top: gameHeight < 450 ? 80 : 100,
         right: 20,
         child: FloatingActionButton(
           onPressed: () {
@@ -381,6 +394,7 @@ Map<String, Widget Function(BuildContext, TimeSanGame)> overlayGame() {
             }
             game.takingItem = true;
           },
+          mini: gameHeight < 450,
           backgroundColor: Colors.blue.shade900,
           foregroundColor: Colors.white,
           child: const Icon(Icons.track_changes),
@@ -414,7 +428,7 @@ Map<String, Widget Function(BuildContext, TimeSanGame)> overlayGame() {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      'You\'ll receive a copy of ${game.currentHex.itemNiceName} into your garden\nThis may stop time itself',
+                      'You\'ll receive a copy of ${game.currentHex.itemNiceName} into your garden\nThis will stop time itself',
                       style: GoogleFonts.robotoCondensed(
                         color: Colors.white,
                         fontSize: 24,
@@ -513,7 +527,7 @@ Map<String, Widget Function(BuildContext, TimeSanGame)> overlayGame() {
                 padding: const EdgeInsets.all(25),
                 child: Text(
                   game.takingItem
-                      ? 'a ${game.currentHex.itemNiceName} is going to your garden!\nLet\'s hope time fix the space you\'re leaving here'
+                      ? 'A ${game.currentHex.itemNiceName} is going to your garden!\nLet\'s hope time fix the space you\'re leaving here'
                       : 'You\'ve found a ${game.gameLevel.winningItemNiceName}\nThis complete level ${game.gameLevel.levelNumber.toString().padLeft(2, '0')}, congratulations!',
                   style: GoogleFonts.robotoCondensed(
                     color: Colors.white,
