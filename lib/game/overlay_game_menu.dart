@@ -112,7 +112,7 @@ Map<String, Widget Function(BuildContext, TimeSanGame)> overlayGame() {
                     StoreConnector<AppState, Function>(
                       converter: (store) {
                         return () {
-                          if (game.staticGame) {
+                          if (game.staticGame && !game.friendsGame) {
                             store.dispatch(LoadingAction(true));
                             store.dispatch(
                                 SaveGardenDataAction(getGardenData(game)));
@@ -140,7 +140,9 @@ Map<String, Widget Function(BuildContext, TimeSanGame)> overlayGame() {
                               padding: const EdgeInsets.all(15.0),
                               child: Text(
                                 game.staticGame
-                                    ? 'Save and Exit'
+                                    ? (game.friendsGame
+                                        ? 'Exit'
+                                        : 'Save and Exit')
                                     : 'Exit to Main Menu',
                                 textAlign: TextAlign.center,
                                 textDirection: TextDirection.ltr,
@@ -188,7 +190,9 @@ Map<String, Widget Function(BuildContext, TimeSanGame)> overlayGame() {
                   children: [
                     Text(
                       game.staticGame
-                          ? 'Welcome to the garden'
+                          ? (game.friendsGame
+                              ? 'Welcome to your friend\'s game'
+                              : 'Welcome to your garden')
                           : 'You\'ll need to find ${game.gameLevel.winningQuantity} ${game.gameLevel.winningQuantity == 1 ? 'version of' : 'versions of'} ${game.gameLevel.winningItemNiceName} to win this level!',
                       style: GoogleFonts.robotoCondensed(
                         color: Colors.white,

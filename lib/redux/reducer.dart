@@ -16,6 +16,9 @@ final appReducer = combineReducers<AppState>([
   TypedReducer<AppState, AddGardenItemAction>(_addGardenItem),
   TypedReducer<AppState, SaveGardenDataAction>(_saveGardenData),
   TypedReducer<AppState, SaveCloudGameDataAction>(_saveCloudGameData),
+  TypedReducer<AppState, ToggleFriendsGardenAction>(_toggleFriendsGarden),
+  TypedReducer<AppState, SaveGardenIdAction>(_saveGardenId),
+  TypedReducer<AppState, SaveFriendGardenAction>(_saveFriendGarden),
 ]);
 
 AppState _setView(AppState state, SetViewAction action) {
@@ -43,8 +46,14 @@ AppState _toggleGameRegister(AppState state, ToggleGameRegisterAction action) {
   return state;
 }
 
+AppState _toggleFriendsGarden(
+    AppState state, ToggleFriendsGardenAction action) {
+  state.friendsView = !state.friendsView;
+  return state;
+}
+
 AppState _completeLevel(AppState state, CompleteLevelAction action) {
-  if(action.levelNumber > state.currentGame) {
+  if (action.levelNumber > state.currentGame) {
     state.currentGame = state.currentGame + 1;
   }
   return state;
@@ -52,10 +61,10 @@ AppState _completeLevel(AppState state, CompleteLevelAction action) {
 
 AppState _loadGameData(AppState state, LoadGameDataAction action) {
   state.userId = action.gameData.userId;
-  state.userInfo = action.gameData.userInfo;
+  state.userGardenId = action.gameData.userGardenId;
   state.gardenGame = action.gameData.gardenGame;
   state.currentGame = action.gameData.currentGame;
-  
+
   return state;
 }
 
@@ -80,5 +89,16 @@ AppState _saveGardenData(AppState state, SaveGardenDataAction action) {
 AppState _saveCloudGameData(AppState state, SaveCloudGameDataAction action) {
   saveDataFromUser(TransferGameData.fromState(state), state.userId);
 
+  return state;
+}
+
+AppState _saveGardenId(AppState state, SaveGardenIdAction action) {
+  state.userGardenId = action.gardenId;
+
+  return state;
+}
+
+AppState _saveFriendGarden(AppState state, SaveFriendGardenAction action) {
+  state.friendGarden = action.garden;
   return state;
 }

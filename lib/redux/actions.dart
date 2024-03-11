@@ -11,6 +11,7 @@ class ToggleGameInfoAction {}
 class ToggleGameSelectAction {}
 class ToggleGameAboutAction {}
 class ToggleGameRegisterAction {}
+class ToggleFriendsGardenAction {}
 
 class CompleteLevelAction {
   final int levelNumber;
@@ -43,3 +44,13 @@ class SaveGardenDataAction {
 }
 
 class SaveCloudGameDataAction {}
+
+class SaveGardenIdAction {
+  final String gardenId;
+  SaveGardenIdAction(this.gardenId);
+}
+
+class SaveFriendGardenAction {
+  GardenData garden;
+  SaveFriendGardenAction(this.garden);
+}

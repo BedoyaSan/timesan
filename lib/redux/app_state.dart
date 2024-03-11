@@ -8,11 +8,13 @@ class AppState {
   bool selectGame;
   bool about;
   bool register;
+  bool friendsView;
 
   int currentGame;
   GardenData gardenGame;
+  GardenData friendGarden;
   String userId;
-  dynamic userInfo;
+  String userGardenId;
 
   bool loading = false;
 
@@ -24,7 +26,10 @@ class AppState {
         register = false,
         currentGame = 0,
         userId = '',
-        gardenGame = GardenData();
+        gardenGame = GardenData(),
+        friendGarden = GardenData(),
+        userGardenId = '',
+        friendsView = false;
 }
 
 class AppMainState {
@@ -34,6 +39,7 @@ class AppMainState {
   bool about;
   bool loading;
   bool register;
+  bool friendsGarden;
 
   AppMainState(
     this.currentView,
@@ -41,7 +47,8 @@ class AppMainState {
     this.selectGame,
     this.about,
     this.loading,
-    this.register
+    this.register,
+    this.friendsGarden
   );
 }
 
@@ -49,45 +56,46 @@ class GameSelectState {
   int currentGame;
   VoidCallback closeSelectState;
   Function setCurrentView;
+  Function toogleFriendsGarden;
 
-  GameSelectState(this.currentGame, this.closeSelectState, this.setCurrentView);
+  GameSelectState(this.currentGame, this.closeSelectState, this.setCurrentView, this.toogleFriendsGarden);
 }
 
 class TransferGameData {
   int currentGame;
   GardenData gardenGame;
   String userId;
-  dynamic userInfo;
+  String userGardenId;
 
   TransferGameData()
       : currentGame = 0,
         userId = '',
-        userInfo = '',
+        userGardenId = '',
         gardenGame = GardenData();
 
   TransferGameData.fromState(AppState data): 
     currentGame = data.currentGame,
     userId = data.userId,
-    userInfo = data.userInfo,
+    userGardenId = data.userGardenId,
     gardenGame = data.gardenGame;
 
   TransferGameData.load(
       {required this.currentGame,
       required this.userId,
       required this.gardenGame,
-      required this.userInfo});
+      required this.userGardenId});
 
   TransferGameData.fromJson(Map<String, dynamic> data)
       : currentGame = data['currentGame'] as int,
         userId = data['userId'] as String,
-        userInfo = data['userInfo'] as String,
+        userGardenId = data['userGardenId'] != null ? data['userGardenId'] as String : '',
         gardenGame = data['gardenGame'] == null ? GardenData() : GardenData.fromJson(data['gardenGame'] as List<dynamic>);
 
   Map<String, dynamic> toJson() {
     return {
       'currentGame': currentGame,
       'userId': userId,
-      'userInfo': userInfo,
+      'userGardenId': userGardenId,
       'gardenGame': gardenGame.toJson(),
     };
   }

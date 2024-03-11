@@ -12,11 +12,17 @@ Widget gameSelect(BuildContext context, String message) {
   double gameWidth = MediaQuery.of(context).size.width;
   return StoreConnector<AppState, GameSelectState>(
     converter: (store) {
-      return GameSelectState(store.state.currentGame,
-          () => store.dispatch(ToggleGameSelectAction()), (String game) {
-        store.dispatch(ToggleGameSelectAction());
-        store.dispatch(SetViewAction(game));
-      });
+      return GameSelectState(
+        store.state.currentGame,
+        () => store.dispatch(ToggleGameSelectAction()),
+        (String game) {
+          store.dispatch(ToggleGameSelectAction());
+          store.dispatch(SetViewAction(game));
+        },
+        () {
+          store.dispatch(ToggleFriendsGardenAction());
+        },
+      );
     },
     builder: (context, selectGameState) {
       return GestureDetector(
@@ -55,7 +61,9 @@ Widget gameSelect(BuildContext context, String message) {
                               () => selectGameState.setCurrentView('Game03'))
                           : Container(),
                       selectGameButton('Garden',
-                          () => selectGameState.setCurrentView('Garden'))
+                          () => selectGameState.setCurrentView('Garden')),
+                      selectGameButton('Friend\'s garden',
+                          () => selectGameState.toogleFriendsGarden())
                     ],
                   ),
                 ),

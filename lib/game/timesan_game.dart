@@ -22,7 +22,8 @@ class TimeSanGame extends FlameGame
       required this.gameLevel,
       this.staticGame = false,
       this.gardenData,
-      required this.currentGame})
+      required this.currentGame,
+      this.friendsGame = false})
       : super();
 
   late Player player;
@@ -34,6 +35,7 @@ class TimeSanGame extends FlameGame
 
   bool staticGame;
   GardenData? gardenData;
+  bool friendsGame;
 
   //Sprites
   late SpriteComponent defaultHex;
@@ -213,11 +215,12 @@ class TimeSanGame extends FlameGame
               hexItem.countHex = item.countHex;
               hexItem.itemName = item.itemName;
               hexItem.itemNiceName = item.itemNiceName;
-              hexItem.isInteractive = item.isInteractive;
-              hexItem.isReactive = item.isReactive;
-
-              if (item.isReactive) {
-                reactiveHex.add(hexItem);
+              if (!friendsGame) {
+                hexItem.isInteractive = item.isInteractive;
+                hexItem.isReactive = item.isReactive;
+                if (item.isReactive) {
+                  reactiveHex.add(hexItem);
+                }
               }
             }
           }
@@ -257,7 +260,9 @@ class TimeSanGame extends FlameGame
     overlays.add(zoomDownId);
 
     if (staticGame) {
-      overlays.add(inventoryButtonId);
+      if (!friendsGame) {
+        overlays.add(inventoryButtonId);
+      }
     } else {
       canTakeItem = currentGame >= gameLevel.levelNumber;
     }
@@ -290,7 +295,7 @@ class TimeSanGame extends FlameGame
       }
 
       // Switch or execute movement
-      if (toChange) {
+      if (toChange && !friendsGame) {
         String idSwitch = currentHex.idHex;
         Vector2 posSwitch = currentHex.gridPosition.clone();
         currentHex.switchHex(
@@ -325,35 +330,37 @@ class TimeSanGame extends FlameGame
       }
 
       //Interactive Stuff
-      for (HexCell hex in reactiveHex) {
-        List<String> neighbors = getNeighborHex(hex);
+      if (!friendsGame) {
+        for (HexCell hex in reactiveHex) {
+          List<String> neighbors = getNeighborHex(hex);
 
-        for (String idHex in neighbors) {
-          HexCell hexDestination =
-              grid.firstWhere((e) => e.idHex == idHex, orElse: () => emptyHex);
+          for (String idHex in neighbors) {
+            HexCell hexDestination = grid.firstWhere((e) => e.idHex == idHex,
+                orElse: () => emptyHex);
 
-          //TO DO -- Refactor
-          if (hex.itemName.contains('HexFlower')) {
-            if (!hexDestination.isDisabled &&
-                hexDestination.itemName == 'Water') {
-              hex.countHex--;
-              if (hex.countHex == 0) {
-                hex.itemName = 'HexFlower03';
-                hex.itemNiceName = 'Hex Flower';
-              } else if (hex.countHex <= 2) {
-                hex.itemName = 'HexFlower02';
-                hex.itemNiceName = 'Medium Hex Flower';
+            //TO DO -- Refactor
+            if (hex.itemName.contains('HexFlower')) {
+              if (!hexDestination.isDisabled &&
+                  hexDestination.itemName == 'Water') {
+                hex.countHex--;
+                if (hex.countHex == 0) {
+                  hex.itemName = 'HexFlower03';
+                  hex.itemNiceName = 'Hex Flower';
+                } else if (hex.countHex <= 2) {
+                  hex.itemName = 'HexFlower02';
+                  hex.itemNiceName = 'Medium Hex Flower';
+                }
               }
             }
           }
+
+          if (hex.countHex == 0) {
+            hex.isReactive = false;
+          }
         }
 
-        if (hex.countHex == 0) {
-          hex.isReactive = false;
-        }
+        reactiveHex.removeWhere((hex) => hex.countHex == 0);
       }
-
-      reactiveHex.removeWhere((hex) => hex.countHex == 0);
 
       // Overlay Status
       if (currentHex.isInteractive && !overlays.isActive(executeActionId)) {

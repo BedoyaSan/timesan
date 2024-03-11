@@ -12,6 +12,7 @@ import 'redux/actions.dart';
 import 'redux/app_state.dart';
 import 'ui/about_screen.dart';
 import 'ui/auth_screen.dart';
+import 'ui/friends_garden.dart';
 import 'ui/register.dart';
 import 'util/data_fetch.dart';
 import 'redux/reducer.dart';
@@ -107,7 +108,8 @@ class _MainAppState extends State<MainApp> {
                   store.state.selectGame,
                   store.state.about,
                   store.state.loading,
-                  store.state.register),
+                  store.state.register,
+                  store.state.friendsView),
               builder: (context, mainState) {
                 return Stack(
                   children: [
@@ -125,7 +127,7 @@ class _MainAppState extends State<MainApp> {
                             context,
                             '- Move around the map an interact with the elements\n'
                             '- Hold when moving for change the next cell object with the current one\n'
-                            '- Win by finding a specific object, in the basic games')
+                            '- Get items by winning levels or replaying levels, then use them in your own garden!')
                         : Container(),
                     mainState.about
                         ? aboutScreen(
@@ -134,6 +136,7 @@ class _MainAppState extends State<MainApp> {
                             'By San <3')
                         : Container(),
                     mainState.register ? register(context) : Container(),
+                    mainState.friendsGarden ? const FriendsGarden() : Container(),
                     mainState.loading
                         ? Container(
                             color: const Color.fromARGB(131, 0, 0, 0),
@@ -177,7 +180,9 @@ Widget appWidget(String value) {
     case 'Home':
       return const MainMenu();
     case 'Garden':
-      return gardenInstance();
+      return gardenInstance(false);
+    case 'FriendsGarden':
+      return gardenInstance(true);
     case 'Game01':
       return const GameInstance(level: 1);
     case 'Game02':
@@ -192,9 +197,9 @@ Widget appWidget(String value) {
   }
 }
 
-Widget gardenInstance() {
+Widget gardenInstance(bool friend) {
   return StoreConnector<AppState, GardenData>(
-    converter: (store) => store.state.gardenGame,
+    converter: (store) => friend ? store.state.friendGarden : store.state.gardenGame,
     builder: (context, gardenData) {
       return GameWidget(
         game: TimeSanGame(
@@ -203,6 +208,7 @@ Widget gardenInstance() {
           staticGame: true,
           gardenData: gardenData,
           currentGame: 0,
+          friendsGame: friend
         ),
         loadingBuilder: (BuildContext context) {
           return Center(
