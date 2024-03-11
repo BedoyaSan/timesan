@@ -81,7 +81,7 @@ class _FriendsGardenState extends State<FriendsGarden> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      'Simulation of a friend\'s garden',
+                      'Enter an id to view your friend\'s garden',
                       style: GoogleFonts.robotoCondensed(
                         color: Colors.white,
                         fontSize: 24,
@@ -170,7 +170,7 @@ class _FriendsGardenState extends State<FriendsGarden> {
                                   child: Padding(
                                     padding: const EdgeInsets.all(15.0),
                                     child: Text(
-                                      'Start',
+                                      'View this garden',
                                       textAlign: TextAlign.center,
                                       textDirection: TextDirection.ltr,
                                       style: GoogleFonts.rubikGlitch(

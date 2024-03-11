@@ -45,6 +45,8 @@ class TimeSanGame extends FlameGame
   late SpriteComponent hexPlant03;
   late SpriteComponent waterDrop;
   late SpriteComponent hexBushDefault;
+  late SpriteComponent trashWater;
+  late SpriteComponent toxicWater;
 
   late SpriteComponent botLeft;
   late SpriteComponent botRight;
@@ -143,6 +145,14 @@ class TimeSanGame extends FlameGame
     );
     hexBushDefault = SpriteComponent(
       sprite: Sprite(await Flame.images.load(AssetsGame.hexBush)),
+      size: Vector2(hexMainX * 2, hexMainY * 2),
+    );
+    trashWater = SpriteComponent(
+      sprite: Sprite(await Flame.images.load(AssetsGame.trashWater)),
+      size: Vector2(hexMainX * 2, hexMainY * 2),
+    );
+    toxicWater = SpriteComponent(
+      sprite: Sprite(await Flame.images.load(AssetsGame.toxicWater)),
       size: Vector2(hexMainX * 2, hexMainY * 2),
     );
 
@@ -414,6 +424,11 @@ class TimeSanGame extends FlameGame
       currentHex.isReactive = true;
       reactiveHex.add(currentHex);
       overlays.remove(executeActionId);
+    } else if(currentHex.itemName == 'TrashWater') {
+      currentHex.isInteractive = false;
+      currentHex.itemName = 'Water';
+      currentHex.itemNiceName = 'Water';
+      overlays.remove(executeActionId);
     }
   }
 
@@ -436,11 +451,13 @@ class TimeSanGame extends FlameGame
   void onPanUpdate(DragUpdateInfo info) {
     if (!onMovement) {
       onMovement = true;
-      hexSwitch = Timer(const Duration(milliseconds: 1250), () {
-        if (onMovement) {
-          toChange = true;
-        }
-      });
+      if (!friendsGame) {
+        hexSwitch = Timer(const Duration(milliseconds: 1250), () {
+          if (onMovement) {
+            toChange = true;
+          }
+        });
+      }
     }
     if (!executingAction) {
       var dx = (finalMovePos.x - initialMovePos.x);

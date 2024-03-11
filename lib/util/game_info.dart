@@ -6,6 +6,8 @@ Map<String, String> info = {
   'HexFlower01': 'Some sprouts, could grow near a water source',
   'HexFlower02': 'A growing plant',
   'HexFlower03': 'A nice flower',
+  'TrashWater' : 'Contaminated water, maybe you can help cleaning it',
+  'ToxicWater' : 'Toxic contamination, there\'s not much that can be recovered from here',
 };
 
 String gameInfo(HexCell hex) {

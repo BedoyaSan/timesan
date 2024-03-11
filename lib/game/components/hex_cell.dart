@@ -49,6 +49,10 @@ class HexCell extends PolygonComponent with HasGameReference<TimeSanGame> {
         case 'HexBush':
           game.hexBushDefault.render(canvas);
           break;
+        case 'TrashWater':
+          game.trashWater.render(canvas);
+        case 'ToxicWater':
+          game.toxicWater.render(canvas);
       }
     }
 

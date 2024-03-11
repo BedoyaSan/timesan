@@ -12,6 +12,8 @@ class AssetsGame {
   static const String hexPlant02 = 'HexPlant02.png';
   static const String hexPlant03 = 'HexPlant03.png';
   static const String waterPuddle = 'WaterPuddle.png';
+  static const String trashWater = 'TrashWater.png';
+  static const String toxicWater = 'ToxicWater.png';
   static const String hexBush = 'HexBushDefault.png';
 
   static const String botLSwitch = 'BotLeftSwitch.png';

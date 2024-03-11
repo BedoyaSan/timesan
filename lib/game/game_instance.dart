@@ -44,7 +44,7 @@ class GameInstance extends StatelessWidget {
             fieldSize: 5, gameLevel: gameWorld02, currentGame: currentGame);
       case 3:
         return TimeSanGame(
-            fieldSize: 10, gameLevel: gameWorld01, currentGame: currentGame);
+            fieldSize: 5, gameLevel: gameWorld03, currentGame: currentGame);
       default:
         return TimeSanGame(
             fieldSize: 0, gameLevel: gameWorld01, currentGame: currentGame);
