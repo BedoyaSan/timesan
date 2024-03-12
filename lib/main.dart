@@ -2,12 +2,11 @@ import 'dart:ui';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:flame/game.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'firebase_options.dart';
 import 'game/game_instance.dart';
-import 'game/overlay_game_menu.dart';
+import 'game/garden_instance.dart';
 import 'redux/actions.dart';
 import 'redux/app_state.dart';
 import 'ui/about_screen.dart';
@@ -19,12 +18,8 @@ import 'redux/reducer.dart';
 import 'ui/game_select.dart';
 import 'ui/info_screen.dart';
 import 'ui/main_menu.dart';
-import 'util/game_item.dart';
-import 'game/timesan_game.dart';
 import 'package:flutter/material.dart';
 import 'package:redux/redux.dart';
-
-import 'util/garden.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -134,7 +129,9 @@ class _MainAppState extends State<MainApp> {
                             'By San <3')
                         : Container(),
                     mainState.register ? register(context) : Container(),
-                    mainState.friendsGarden ? const FriendsGarden() : Container(),
+                    mainState.friendsGarden
+                        ? const FriendsGarden()
+                        : Container(),
                     mainState.loading
                         ? Container(
                             color: const Color.fromARGB(131, 0, 0, 0),
@@ -178,9 +175,9 @@ Widget appWidget(String value) {
     case 'Home':
       return const MainMenu();
     case 'Garden':
-      return gardenInstance(false);
+      return const GardenInstance(friend: false);
     case 'FriendsGarden':
-      return gardenInstance(true);
+      return const GardenInstance(friend: true);
     case 'Game01':
       return const GameInstance(level: 1);
     case 'Game02':
@@ -193,35 +190,4 @@ Widget appWidget(String value) {
     default:
       return const MainMenu();
   }
-}
-
-Widget gardenInstance(bool friend) {
-  return StoreConnector<AppState, GardenData>(
-    converter: (store) => friend ? store.state.friendGarden : store.state.gardenGame,
-    builder: (context, gardenData) {
-      return GameWidget(
-        game: TimeSanGame(
-          fieldSize: 6,
-          gameLevel: GameLevelData([], 0, '', '', 0),
-          staticGame: true,
-          gardenData: gardenData,
-          currentGame: 0,
-          friendsGame: friend
-        ),
-        loadingBuilder: (BuildContext context) {
-          return Center(
-            child: Text(
-              'Loading simulation',
-              style: GoogleFonts.robotoCondensed(
-                color: Colors.white,
-                fontSize: 24,
-                decoration: TextDecoration.none,
-              ),
-            ),
-          );
-        },
-        overlayBuilderMap: overlayGame(),
-      );
-    },
-  );
 }

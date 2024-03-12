@@ -36,74 +36,99 @@ class _AuthScreenState extends State<AuthScreen> {
 
   @override
   Widget build(BuildContext context) {
+    ScrollController controller = ScrollController();
     double widthValue = MediaQuery.of(context).size.width;
+
     if (FirebaseAuth.instance.currentUser == null) {
       return Material(
         child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+          child: ListView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            controller: controller,
+            shrinkWrap: true,
             children: [
-              SignInButtonBuilder(
-                onPressed: () async {
-                  Store<AppState> store = StoreProvider.of<AppState>(context);
-                  store.dispatch(LoadingAction(true));
-                  await FirebaseAuth.instance.signInAnonymously();
-                  store.dispatch(SetViewAction('Home'));
-                  store.dispatch(LoadingAction(false));
-                },
-                backgroundColor: Colors.cyan,
-                text: 'Sign in anonymously',
+              Padding(
+                padding: EdgeInsets.only(
+                  left: widthValue < 500 ? widthValue * 0.1 : widthValue * 0.25,
+                  right:
+                      widthValue < 500 ? widthValue * 0.1 : widthValue * 0.25,
+                ),
+                child: SignInButtonBuilder(
+                  onPressed: () async {
+                    Store<AppState> store = StoreProvider.of<AppState>(context);
+                    store.dispatch(LoadingAction(true));
+                    await FirebaseAuth.instance.signInAnonymously();
+                    store.dispatch(SetViewAction('Home'));
+                    store.dispatch(LoadingAction(false));
+                  },
+                  backgroundColor: Colors.cyan,
+                  text: 'Sign in anonymously',
+                ),
               ),
               const SizedBox(
                 height: 15,
               ),
-              SignInButton(
-                Buttons.Google,
-                onPressed: () async {
-                  Store<AppState> store = StoreProvider.of<AppState>(context);
-                  store.dispatch(LoadingAction(true));
+              Padding(
+                padding: EdgeInsets.only(
+                  left: widthValue < 500 ? widthValue * 0.1 : widthValue * 0.25,
+                  right:
+                      widthValue < 500 ? widthValue * 0.1 : widthValue * 0.25,
+                ),
+                child: SignInButton(
+                  Buttons.Google,
+                  onPressed: () async {
+                    Store<AppState> store = StoreProvider.of<AppState>(context);
+                    store.dispatch(LoadingAction(true));
 
-                  GoogleAuthProvider googleProvider = GoogleAuthProvider();
+                    GoogleAuthProvider googleProvider = GoogleAuthProvider();
 
-                  await FirebaseAuth.instance.signInWithPopup(googleProvider);
+                    await FirebaseAuth.instance.signInWithPopup(googleProvider);
 
-                  String? userId = FirebaseAuth.instance.currentUser?.uid;
-                  if (userId != null) {
-                    var gameData = await getDataFromUser(userId);
-                    if (gameData != null) {
-                      TransferGameData? loadData;
-                      if (gameData is Map<String, dynamic>) {
-                        loadData = TransferGameData.fromJson(gameData);
-                      } else if (gameData is TransferGameData) {
-                        loadData = gameData;
-                      }
-                      if (loadData != null) {
-                        store.dispatch(LoadGameDataAction(loadData));
+                    String? userId = FirebaseAuth.instance.currentUser?.uid;
+                    if (userId != null) {
+                      var gameData = await getDataFromUser(userId);
+                      if (gameData != null) {
+                        TransferGameData? loadData;
+                        if (gameData is Map<String, dynamic>) {
+                          loadData = TransferGameData.fromJson(gameData);
+                        } else if (gameData is TransferGameData) {
+                          loadData = gameData;
+                        }
+                        if (loadData != null) {
+                          store.dispatch(LoadGameDataAction(loadData));
+                        }
                       }
                     }
-                  }
 
-                  store.dispatch(SetViewAction('Home'));
-                  store.dispatch(LoadingAction(false));
-                },
+                    store.dispatch(SetViewAction('Home'));
+                    store.dispatch(LoadingAction(false));
+                  },
+                ),
               ),
               const SizedBox(
                 height: 15,
               ),
-              SignInButtonBuilder(
-                onPressed: () async {
-                  Store<AppState> store = StoreProvider.of<AppState>(context);
-                  store.dispatch(LoadingAction(true));
-                  store.dispatch(SetViewAction('Home'));
-                  Future.delayed(Duration.zero, () {
-                    if (FirebaseAuth.instance.currentUser == null) {
-                      store.dispatch(ToggleGameRegisterAction());
-                    }
-                  });
-                  store.dispatch(LoadingAction(false));
-                },
-                backgroundColor: const Color.fromARGB(255, 228, 124, 117),
-                text: 'Back to main menu',
+              Padding(
+                padding: EdgeInsets.only(
+                  left: widthValue < 500 ? widthValue * 0.1 : widthValue * 0.25,
+                  right:
+                      widthValue < 500 ? widthValue * 0.1 : widthValue * 0.25,
+                ),
+                child: SignInButtonBuilder(
+                  onPressed: () async {
+                    Store<AppState> store = StoreProvider.of<AppState>(context);
+                    store.dispatch(LoadingAction(true));
+                    store.dispatch(SetViewAction('Home'));
+                    Future.delayed(Duration.zero, () {
+                      if (FirebaseAuth.instance.currentUser == null) {
+                        store.dispatch(ToggleGameRegisterAction());
+                      }
+                    });
+                    store.dispatch(LoadingAction(false));
+                  },
+                  backgroundColor: const Color.fromARGB(255, 228, 124, 117),
+                  text: 'Back to main menu',
+                ),
               ),
             ],
           ),
@@ -113,8 +138,10 @@ class _AuthScreenState extends State<AuthScreen> {
 
     return Material(
       child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+        child: ListView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          controller: controller,
+          shrinkWrap: true,
           children: [
             Padding(
               padding: EdgeInsets.only(
@@ -160,75 +187,104 @@ class _AuthScreenState extends State<AuthScreen> {
             ),
             (FirebaseAuth.instance.currentUser != null &&
                     FirebaseAuth.instance.currentUser!.isAnonymous)
-                ? Column(
-                    children: [
-                      Text(
-                        'Link your current game to a Google account (recomended)',
-                        style: GoogleFonts.robotoCondensed(
-                          color: Colors.cyan,
-                          fontSize: 18,
-                          decoration: TextDecoration.none,
+                ? Padding(
+                    padding: const EdgeInsets.only(
+                      left: 20,
+                      right: 20,
+                    ),
+                    child: Column(
+                      children: [
+                        Text(
+                          'Link your current game to a Google account (recomended)',
+                          style: GoogleFonts.robotoCondensed(
+                            color: Colors.cyan,
+                            fontSize: 18,
+                            decoration: TextDecoration.none,
+                          ),
                         ),
-                      ),
-                      Text(
-                        'If this Google account has data already, it will override current game',
-                        style: GoogleFonts.robotoCondensed(
-                          color: Colors.redAccent.shade400,
-                          fontSize: 16,
-                          decoration: TextDecoration.none,
+                        Text(
+                          'If this Google account has data already, it will override current game',
+                          style: GoogleFonts.robotoCondensed(
+                            color: Colors.redAccent.shade400,
+                            fontSize: 16,
+                            decoration: TextDecoration.none,
+                          ),
                         ),
-                      )
-                    ],
+                        const SizedBox(
+                          height: 10,
+                        )
+                      ],
+                    ),
                   )
                 : Container(),
             (FirebaseAuth.instance.currentUser != null &&
                     FirebaseAuth.instance.currentUser!.isAnonymous)
-                ? SignInButton(
-                    Buttons.Google,
-                    onPressed: () async {
-                      Store<AppState> store =
-                          StoreProvider.of<AppState>(context);
-                      store.dispatch(LoadingAction(true));
+                ? Padding(
+                    padding: EdgeInsets.only(
+                      left: widthValue < 500
+                          ? widthValue * 0.1
+                          : widthValue * 0.25,
+                      right: widthValue < 500
+                          ? widthValue * 0.1
+                          : widthValue * 0.25,
+                    ),
+                    child: SignInButton(
+                      Buttons.Google,
+                      onPressed: () async {
+                        Store<AppState> store =
+                            StoreProvider.of<AppState>(context);
+                        store.dispatch(LoadingAction(true));
 
-                      GoogleAuthProvider googleProvider = GoogleAuthProvider();
+                        GoogleAuthProvider googleProvider =
+                            GoogleAuthProvider();
 
-                      await FirebaseAuth.instance
-                          .signInWithPopup(googleProvider);
+                        await FirebaseAuth.instance
+                            .signInWithPopup(googleProvider);
 
-                      String? userId = FirebaseAuth.instance.currentUser?.uid;
-                      if (userId != null) {
-                        var gameData = await getDataFromUser(userId);
-                        if (gameData != null) {
-                          TransferGameData? loadData;
-                          if (gameData is Map<String, dynamic>) {
-                            loadData = TransferGameData.fromJson(gameData);
-                          } else if (gameData is TransferGameData) {
-                            loadData = gameData;
-                          }
-                          if (loadData != null) {
-                            store.dispatch(LoadGameDataAction(loadData));
+                        String? userId = FirebaseAuth.instance.currentUser?.uid;
+                        if (userId != null) {
+                          var gameData = await getDataFromUser(userId);
+                          if (gameData != null) {
+                            TransferGameData? loadData;
+                            if (gameData is Map<String, dynamic>) {
+                              loadData = TransferGameData.fromJson(gameData);
+                            } else if (gameData is TransferGameData) {
+                              loadData = gameData;
+                            }
+                            if (loadData != null) {
+                              store.dispatch(LoadGameDataAction(loadData));
+                            }
                           }
                         }
-                      }
 
-                      store.dispatch(SetViewAction('Home'));
-                      store.dispatch(LoadingAction(false));
-                    },
+                        store.dispatch(SetViewAction('Home'));
+                        store.dispatch(LoadingAction(false));
+                      },
+                    ),
                   )
                 : Container(),
             const SizedBox(
               height: 15,
             ),
-            SignInButtonBuilder(
-              onPressed: () {
-                Store<AppState> store = StoreProvider.of<AppState>(context);
-                store.dispatch(LoadingAction(true));
-                store.dispatch(SetViewAction('Home'));
-                store.dispatch(LoadingAction(false));
-              },
-              backgroundColor: const Color.fromARGB(255, 228, 124, 117),
-              text: 'Back to main menu',
+            Padding(
+              padding: EdgeInsets.only(
+                left: widthValue < 500 ? widthValue * 0.1 : widthValue * 0.25,
+                right: widthValue < 500 ? widthValue * 0.1 : widthValue * 0.25,
+              ),
+              child: SignInButtonBuilder(
+                onPressed: () {
+                  Store<AppState> store = StoreProvider.of<AppState>(context);
+                  store.dispatch(LoadingAction(true));
+                  store.dispatch(SetViewAction('Home'));
+                  store.dispatch(LoadingAction(false));
+                },
+                backgroundColor: const Color.fromARGB(255, 228, 124, 117),
+                text: 'Back to main menu',
+              ),
             ),
+            const SizedBox(
+              height: 20,
+            )
           ],
         ),
       ),
