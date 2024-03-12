@@ -30,7 +30,7 @@ jobs:
         run: flutter pub upgrade
   
       - name: Build web app
-        run: flutter build web
+        run: flutter build web --pwa-strategy none
 
       - name: Deploy to Azure
         uses: Azure/static-web-apps-deploy@v1

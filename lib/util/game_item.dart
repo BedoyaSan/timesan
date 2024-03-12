@@ -5,10 +5,16 @@ class GameItem {
     isInteractive = true;
   }
 
+  GameItem.reactive(this.itemName, this.itemNiceName) {
+    isReactive = true;
+    countHex = 1;
+  }
+
   late String itemName;
   late String itemNiceName;
   bool isInteractive = false;
   bool isReactive = false;
+  int countHex = 0;
 }
 
 class GameLevelData {
@@ -48,8 +54,8 @@ GameLevelData gameWorld02 =
 List<GameItem> itemsWorld03 = [
   GameItem.interactive('TrashWater', 'Contaminated Water'),
   GameItem.interactive('TrashWater', 'Contaminated Water'),
-  GameItem.interactive('TrashWater', 'Contaminated Water'),
-  GameItem.interactive('ToxicWater', 'Toxic Water'),
+  GameItem.reactive('ToxicWater', 'Toxic Water'),
+  GameItem.reactive('ToxicWater', 'Toxic Water'),
   GameItem.interactive('HexBush', 'Bush'),
   GameItem.interactive('HexBush', 'Bush'),
   GameItem.interactive('HexBush', 'Bush'),
@@ -57,4 +63,4 @@ List<GameItem> itemsWorld03 = [
   GameItem.interactive('HexBush', 'Bush'),
 ];
 GameLevelData gameWorld03 =
-    GameLevelData(itemsWorld03, 3, 'HexFlower03', 'Hex Flower', 2);
+    GameLevelData(itemsWorld03, 3, 'CorruptedFlower', 'Corrupted Flower', 1);

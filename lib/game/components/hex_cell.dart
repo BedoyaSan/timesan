@@ -19,10 +19,10 @@ class HexCell extends PolygonComponent with HasGameReference<TimeSanGame> {
   bool isInteractive = false;
   bool isReactive = false;
 
-  // @override
-  // void update(double dt) {
-  //   game.hexBushAnimationItem.update(dt);
-  // }
+  @override
+  void update(double dt) {
+    game.corruptedFlower.update(dt);
+  }
 
   @override
   Future<void> render(Canvas canvas) async {
@@ -53,6 +53,8 @@ class HexCell extends PolygonComponent with HasGameReference<TimeSanGame> {
           game.trashWater.render(canvas);
         case 'ToxicWater':
           game.toxicWater.render(canvas);
+        case 'CorruptedFlower':
+          game.corruptedFlower.render(canvas);
       }
     }
 

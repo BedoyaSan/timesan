@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:flutter_signin_button/flutter_signin_button.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:redux/redux.dart';
 
 import '../redux/actions.dart';
@@ -92,7 +93,14 @@ class _AuthScreenState extends State<AuthScreen> {
               SignInButtonBuilder(
                 onPressed: () async {
                   Store<AppState> store = StoreProvider.of<AppState>(context);
+                  store.dispatch(LoadingAction(true));
                   store.dispatch(SetViewAction('Home'));
+                  Future.delayed(Duration.zero, () {
+                    if (FirebaseAuth.instance.currentUser == null) {
+                      store.dispatch(ToggleGameRegisterAction());
+                    }
+                  });
+                  store.dispatch(LoadingAction(false));
                 },
                 backgroundColor: const Color.fromARGB(255, 228, 124, 117),
                 text: 'Back to main menu',
@@ -147,6 +155,67 @@ class _AuthScreenState extends State<AuthScreen> {
                 : const SizedBox(
                     height: 25,
                   ),
+            const SizedBox(
+              height: 15,
+            ),
+            (FirebaseAuth.instance.currentUser != null &&
+                    FirebaseAuth.instance.currentUser!.isAnonymous)
+                ? Column(
+                    children: [
+                      Text(
+                        'Link your current game to a Google account (recomended)',
+                        style: GoogleFonts.robotoCondensed(
+                          color: Colors.cyan,
+                          fontSize: 18,
+                          decoration: TextDecoration.none,
+                        ),
+                      ),
+                      Text(
+                        'If this Google account has data already, it will override current game',
+                        style: GoogleFonts.robotoCondensed(
+                          color: Colors.redAccent.shade400,
+                          fontSize: 16,
+                          decoration: TextDecoration.none,
+                        ),
+                      )
+                    ],
+                  )
+                : Container(),
+            (FirebaseAuth.instance.currentUser != null &&
+                    FirebaseAuth.instance.currentUser!.isAnonymous)
+                ? SignInButton(
+                    Buttons.Google,
+                    onPressed: () async {
+                      Store<AppState> store =
+                          StoreProvider.of<AppState>(context);
+                      store.dispatch(LoadingAction(true));
+
+                      GoogleAuthProvider googleProvider = GoogleAuthProvider();
+
+                      await FirebaseAuth.instance
+                          .signInWithPopup(googleProvider);
+
+                      String? userId = FirebaseAuth.instance.currentUser?.uid;
+                      if (userId != null) {
+                        var gameData = await getDataFromUser(userId);
+                        if (gameData != null) {
+                          TransferGameData? loadData;
+                          if (gameData is Map<String, dynamic>) {
+                            loadData = TransferGameData.fromJson(gameData);
+                          } else if (gameData is TransferGameData) {
+                            loadData = gameData;
+                          }
+                          if (loadData != null) {
+                            store.dispatch(LoadGameDataAction(loadData));
+                          }
+                        }
+                      }
+
+                      store.dispatch(SetViewAction('Home'));
+                      store.dispatch(LoadingAction(false));
+                    },
+                  )
+                : Container(),
             const SizedBox(
               height: 15,
             ),

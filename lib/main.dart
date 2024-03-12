@@ -114,9 +114,7 @@ class _MainAppState extends State<MainApp> {
                 return Stack(
                   children: [
                     AnimatedSwitcher(
-                      duration: const Duration(milliseconds: 1250),
-                      // transitionBuilder: (Widget child, Animation<double> animation) =>
-                      //     ScaleTransition(scale: animation, child: child),
+                      duration: const Duration(milliseconds: 250),
                       child: appWidget(mainState.currentView),
                     ),
                     mainState.selectGame

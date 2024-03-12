@@ -48,6 +48,8 @@ class TimeSanGame extends FlameGame
   late SpriteComponent trashWater;
   late SpriteComponent toxicWater;
 
+  late SpriteAnimationComponent corruptedFlower;
+
   late SpriteComponent botLeft;
   late SpriteComponent botRight;
   late SpriteComponent botLeftSwitch;
@@ -156,6 +158,26 @@ class TimeSanGame extends FlameGame
       size: Vector2(hexMainX * 2, hexMainY * 2),
     );
 
+    corruptedFlower = SpriteAnimationComponent(
+      animation: SpriteAnimation([
+        SpriteAnimationFrame(
+            Sprite(await Flame.images.load(AssetsGame.corruptedFlower00)), 50),
+        SpriteAnimationFrame(
+            Sprite(await Flame.images.load(AssetsGame.corruptedFlower01)), 50),
+        SpriteAnimationFrame(
+            Sprite(await Flame.images.load(AssetsGame.corruptedFlower02)), 50),
+        SpriteAnimationFrame(
+            Sprite(await Flame.images.load(AssetsGame.corruptedFlower03)), 50),
+        SpriteAnimationFrame(
+            Sprite(await Flame.images.load(AssetsGame.corruptedFlower02)), 50),
+        SpriteAnimationFrame(
+            Sprite(await Flame.images.load(AssetsGame.corruptedFlower01)), 50),
+        SpriteAnimationFrame(
+            Sprite(await Flame.images.load(AssetsGame.corruptedFlower00)), 50),
+      ]),
+      size: Vector2(hexMainX * 2, hexMainY * 2),
+    );
+
     botLeft = SpriteComponent(
       sprite: Sprite(await Flame.images.load(AssetsGame.botL00)),
       size: Vector2(hexMainX * 2, hexMainY * 2),
@@ -177,26 +199,26 @@ class TimeSanGame extends FlameGame
     botLeftAnimation = SpriteAnimationComponent(
       animation: SpriteAnimation([
         SpriteAnimationFrame(
-            Sprite(await Flame.images.load(AssetsGame.botL00)), 0.1),
+            Sprite(await Flame.images.load(AssetsGame.botL00)), 0.15),
         SpriteAnimationFrame(
-            Sprite(await Flame.images.load(AssetsGame.botL01)), 0.1),
+            Sprite(await Flame.images.load(AssetsGame.botL01)), 0.15),
         SpriteAnimationFrame(
-            Sprite(await Flame.images.load(AssetsGame.botL10)), 0.1),
+            Sprite(await Flame.images.load(AssetsGame.botL10)), 0.15),
         SpriteAnimationFrame(
-            Sprite(await Flame.images.load(AssetsGame.botL11)), 0.1),
+            Sprite(await Flame.images.load(AssetsGame.botL11)), 0.15),
       ]),
       size: Vector2(hexMainX * 2, hexMainY * 2),
     );
     botRightAnimation = SpriteAnimationComponent(
       animation: SpriteAnimation([
         SpriteAnimationFrame(
-            Sprite(await Flame.images.load(AssetsGame.botR00)), 0.1),
+            Sprite(await Flame.images.load(AssetsGame.botR00)), 0.15),
         SpriteAnimationFrame(
-            Sprite(await Flame.images.load(AssetsGame.botR01)), 0.1),
+            Sprite(await Flame.images.load(AssetsGame.botR01)), 0.15),
         SpriteAnimationFrame(
-            Sprite(await Flame.images.load(AssetsGame.botR10)), 0.1),
+            Sprite(await Flame.images.load(AssetsGame.botR10)), 0.15),
         SpriteAnimationFrame(
-            Sprite(await Flame.images.load(AssetsGame.botR11)), 0.1),
+            Sprite(await Flame.images.load(AssetsGame.botR11)), 0.15),
       ]),
       size: Vector2(hexMainX * 2, hexMainY * 2),
     );
@@ -247,8 +269,12 @@ class TimeSanGame extends FlameGame
         }
         grid[aux].itemName = item.itemName;
         grid[aux].isInteractive = item.isInteractive;
-        grid[aux].isReactive = item.isReactive;
         grid[aux].itemNiceName = item.itemNiceName;
+        grid[aux].countHex = item.countHex;
+        if (item.isReactive) {
+          grid[aux].isReactive = item.isReactive;
+          reactiveHex.add(grid[aux]);
+        }
         aux++;
       }
     }
@@ -339,17 +365,16 @@ class TimeSanGame extends FlameGame
         ));
       }
 
-      //Interactive Stuff
+      //Reactive Stuff
       if (!friendsGame) {
         for (HexCell hex in reactiveHex) {
           List<String> neighbors = getNeighborHex(hex);
 
-          for (String idHex in neighbors) {
-            HexCell hexDestination = grid.firstWhere((e) => e.idHex == idHex,
-                orElse: () => emptyHex);
+          if (hex.itemName.contains('HexFlower')) {
+            for (String idHex in neighbors) {
+              HexCell hexDestination = grid.firstWhere((e) => e.idHex == idHex,
+                  orElse: () => emptyHex);
 
-            //TO DO -- Refactor
-            if (hex.itemName.contains('HexFlower')) {
               if (!hexDestination.isDisabled &&
                   hexDestination.itemName == 'Water') {
                 hex.countHex--;
@@ -361,6 +386,28 @@ class TimeSanGame extends FlameGame
                   hex.itemNiceName = 'Medium Hex Flower';
                 }
               }
+            }
+          }
+          if (hex.itemName == 'ToxicWater') {
+            HexCell? hexFlower;
+            for (String idHex in neighbors) {
+              if (hexFlower == null) {
+                HexCell hexDestination = grid.firstWhere(
+                  (e) => e.idHex == idHex,
+                  orElse: () => emptyHex,
+                );
+                if (hexDestination.itemName == 'HexFlower03') {
+                  hexFlower = hexDestination;
+                }
+              }
+            }
+
+            if (hexFlower != null && hexFlower.itemName != '') {
+              hexFlower.itemName = 'CorruptedFlower';
+              hexFlower.itemNiceName = 'Corrupted flower';
+              hex.countHex = 0;
+              hex.itemName = 'Water';
+              hex.itemNiceName = 'Water';
             }
           }
 
@@ -424,7 +471,7 @@ class TimeSanGame extends FlameGame
       currentHex.isReactive = true;
       reactiveHex.add(currentHex);
       overlays.remove(executeActionId);
-    } else if(currentHex.itemName == 'TrashWater') {
+    } else if (currentHex.itemName == 'TrashWater') {
       currentHex.isInteractive = false;
       currentHex.itemName = 'Water';
       currentHex.itemNiceName = 'Water';

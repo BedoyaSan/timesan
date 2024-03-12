@@ -28,7 +28,48 @@ Widget register(BuildContext context) {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                'Welcome, feel free to start playing as a guest',
+                'Login to a Google account, to keep or recover your progress data',
+                style: GoogleFonts.robotoCondensed(
+                  color: Colors.white,
+                  fontSize: 24,
+                  decoration: TextDecoration.none,
+                ),
+              ),
+              GestureDetector(
+                onTap: () {
+                  Store<AppState> store = StoreProvider.of<AppState>(context);
+                  store.dispatch(ToggleGameRegisterAction());
+                  store.dispatch(SetViewAction('Authentication'));
+                },
+                child: Container(
+                  width: 200,
+                  margin: const EdgeInsets.only(top: 16),
+                  decoration: const BoxDecoration(
+                    image: DecorationImage(
+                      image: AssetImage(AssetsUI.hexBorderButton),
+                      fit: BoxFit.fill,
+                    ),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(15.0),
+                    child: Text(
+                      'Log in / Register',
+                      textAlign: TextAlign.center,
+                      textDirection: TextDirection.ltr,
+                      style: GoogleFonts.rubikGlitch(
+                        color: Colors.white,
+                        fontSize: 16,
+                        decoration: TextDecoration.none,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(
+                height: 50,
+              ),
+              Text(
+                'Or feel free to start playing as a guest',
                 style: GoogleFonts.robotoCondensed(
                   color: Colors.white,
                   fontSize: 24,
@@ -56,47 +97,6 @@ Widget register(BuildContext context) {
                     padding: const EdgeInsets.all(15.0),
                     child: Text(
                       'Start!',
-                      textAlign: TextAlign.center,
-                      textDirection: TextDirection.ltr,
-                      style: GoogleFonts.rubikGlitch(
-                        color: Colors.white,
-                        fontSize: 16,
-                        decoration: TextDecoration.none,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(
-                height: 50,
-              ),
-              Text(
-                'If you\'ve played before and want to continue there, login with your account',
-                style: GoogleFonts.robotoCondensed(
-                  color: Colors.white,
-                  fontSize: 24,
-                  decoration: TextDecoration.none,
-                ),
-              ),
-              GestureDetector(
-                onTap: () {
-                  Store<AppState> store = StoreProvider.of<AppState>(context);
-                  store.dispatch(ToggleGameRegisterAction());
-                  store.dispatch(SetViewAction('Authentication'));
-                },
-                child: Container(
-                  width: 200,
-                  margin: const EdgeInsets.only(top: 16),
-                  decoration: const BoxDecoration(
-                    image: DecorationImage(
-                      image: AssetImage(AssetsUI.hexBorderButton),
-                      fit: BoxFit.fill,
-                    ),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(15.0),
-                    child: Text(
-                      'Log in / Register',
                       textAlign: TextAlign.center,
                       textDirection: TextDirection.ltr,
                       style: GoogleFonts.rubikGlitch(
